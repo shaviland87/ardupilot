@@ -26,6 +26,7 @@ class AP_BattMonitor_SMBus;
 class AP_BattMonitor_SMBus_Solo;
 class AP_BattMonitor_SMBus_Maxell;
 class AP_BattMonitor_UAVCAN;
+class AP_BattMonitor_OA;
 
 class AP_BattMonitor
 {
@@ -38,6 +39,7 @@ class AP_BattMonitor
     friend class AP_BattMonitor_Sum;
     friend class AP_BattMonitor_FuelFlow;
     friend class AP_BattMonitor_FuelLevel_PWM;
+    friend class AP_BattMonitor_OA;
 
 public:
 

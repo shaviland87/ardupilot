@@ -5,6 +5,19 @@ void Copter::userhook_init()
 {
     // put your initialisation code here
     // this will be called once at start-up
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        init_optimaero();
+    #endif
+
+    //hal.uartE->begin(115200,256,256);
+    //hal.uartE->flush();
+    //hal.uartE->printf("init uarte\n");
+
+    #if 1==1
+        hal.uartD->begin(115200,256,256);
+        printf("starting uartD\n");
+    #endif
+
 }
 #endif
 
@@ -12,6 +25,9 @@ void Copter::userhook_init()
 void Copter::userhook_FastLoop()
 {
     // put your 100Hz code here
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        update_optimaero_Fast();
+    #endif
 }
 #endif
 
@@ -26,6 +42,21 @@ void Copter::userhook_50Hz()
 void Copter::userhook_MediumLoop()
 {
     // put your 10Hz code here
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        update_optimaero_10Hz();
+    #endif
+
+
+    #if 1==1
+
+        int bytesAvail = 0;
+        while(hal.uartD->available() && bytesAvail < 10){
+            printf("uartD[%d] == %d \n",bytesAvail, hal.uartD->read());
+            bytesAvail++;
+        }
+       
+    #endif
+
 }
 #endif
 
@@ -40,6 +71,9 @@ void Copter::userhook_SlowLoop()
 void Copter::userhook_SuperSlowLoop()
 {
     // put your 1Hz code here
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        update_optimaero_Slow();
+    #endif
 }
 #endif
 

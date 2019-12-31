@@ -340,6 +340,59 @@ void Copter::Log_Write_SysID_Setup(uint8_t systemID_axis, float waveform_magnitu
 #endif
 }
 
+#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+    /*optim chirp full */
+    struct PACKED log_OPTIM_CHIRPFULL {
+        LOG_PACKET_HEADER;
+        uint64_t time_us;
+        float pre_inject;
+        //float roll_cmd;
+        //float roll_act;
+        //float pit_cmd;
+        //float pit_act;
+        //float yaw_cmd;
+        //float yaw_act;
+        //float roll_out;
+        //float pit_out;
+        //float yaw_out;
+        float thr_out;
+        //float gx;
+        //float gy;
+        //float gz;
+    };
+
+    void Copter::Log_Write_Optim_ChirpFull(){
+
+        //Vector3f att_chirp_target = attitude_control->get_chirp_att_cmd_cd(); //this is command chirp from pilot    
+        //Vector3f rate_targets = attitude_control->rate_bf_targets();
+
+        struct log_OPTIM_CHIRPFULL pkt_chirp = {
+            LOG_PACKET_HEADER_INIT(LOG_CHIRP_FULL),
+            time_us     : AP_HAL::micros64(),
+            pre_inject  : copter.m_input,
+            //roll_cmd    : 0.0,
+            //roll_act    : (float)ahrs.roll_sensor,
+           // pit_cmd     : 0.0,
+           // pit_act     : (float)ahrs.pitch_sensor,
+           // yaw_cmd     : degrees(rate_targets.z),
+           // yaw_act     : degrees(ahrs.get_gyro().z),
+           // roll_out    : motors->get_roll(),
+           // pit_out     : motors->get_pitch(),
+           // yaw_out     : motors->get_yaw(),
+            thr_out     : motors->get_throttle_out()
+           // gx          : degrees(ahrs.get_gyro().x),
+           // gy          : degrees(ahrs.get_gyro().y),
+           // gz          : degrees(ahrs.get_gyro().z)
+        };
+        
+        logger.WriteBlock(&pkt_chirp, sizeof(pkt_chirp));
+    }
+
+    #endif
+#endif
+
+
 struct PACKED log_Heli {
     LOG_PACKET_HEADER;
     uint64_t time_us;
@@ -484,6 +537,13 @@ const struct LogStructure Copter::log_structure[] = {
       "SIDS", "QBfffffff",  "TimeUS,Ax,Mag,FSt,FSp,TFin,TC,TR,TFout", "s--ssssss", "F--------" },
     { LOG_GUIDEDTARGET_MSG, sizeof(log_GuidedTarget),
       "GUID",  "QBffffff",    "TimeUS,Type,pX,pY,pZ,vX,vY,vZ", "s-mmmnnn", "F-000000" },
+#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+//        { LOG_CHIRP_FULL, sizeof(log_OPTIM_CHIRPFULL),"CHRP","Qffffffffffffff","Time,pI,rlC,rlA,ptC,ptA,ywC,ywA,rlO,ptO,ywO,thrO,gx,gy,gz","s--------------","F00000000000000"},
+          { LOG_CHIRP_FULL, sizeof(log_OPTIM_CHIRPFULL),"CHRP","Qff","Time,pI,thrO","s--","F00"},
+
+    #endif
+#endif
 };
 
 void Copter::Log_Write_Vehicle_Startup_Messages()

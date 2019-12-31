@@ -349,6 +349,11 @@ private:
 # include USERHOOK_VARIABLES
 #endif
 
+/* optimaero include*/
+#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    #include "optim_include.h"
+#endif
+
     // Documentation of GLobals:
     typedef union {
         struct {

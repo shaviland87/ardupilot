@@ -332,9 +332,17 @@ void Copter::update_batt_compass(void)
 // should be run at 400hz
 void Copter::fourhundred_hz_logging()
 {
-    if (should_log(MASK_LOG_ATTITUDE_FAST) && !copter.flightmode->logs_attitude()) {
+    //if (should_log(MASK_LOG_ATTITUDE_FAST) && !copter.flightmode->logs_attitude()) {
         Log_Write_Attitude();
-    }
+    //}
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+            // Log_Write_Optim_ChirpFull();  
+                if (should_log(MASK_LOG_RCOUT)) {
+                    logger.Write_RCOUT();
+                }
+        #endif
+    #endif
 }
 
 // ten_hz_logging_loop

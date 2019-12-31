@@ -955,6 +955,12 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("FS_OPTIONS", 36, ParametersG2, fs_options, 0),
 
+#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    // @Group: OPTIM
+    // @Path: ../libraries/AP_OA_EXT/optimAero.cpp
+    AP_SUBGROUPINFO(oa_module,"OPTIM_",37, ParametersG2, optimAero),
+#endif
+
     AP_GROUPEND
 };
 
