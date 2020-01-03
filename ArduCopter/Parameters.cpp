@@ -963,6 +963,12 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     AP_SUBGROUPINFO(arot, "AROT_", 37, ParametersG2, AC_Autorotation),
 #endif
 
+#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    // @Group: OPTIM
+    // @Path: ../libraries/AP_OA_EXT/optimAero.cpp
+    AP_SUBGROUPINFO(oa_module,"OPTIM_",38, ParametersG2, optimAero),
+#endif
+
     AP_GROUPEND
 };
 

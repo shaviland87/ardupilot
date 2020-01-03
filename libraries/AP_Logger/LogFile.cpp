@@ -18,6 +18,7 @@
 #include "AP_Logger_MAVLink.h"
 #include "LoggerMessageWriter.h"
 
+#include <AP_OA_EXT/optimAero.h>
 extern const AP_HAL::HAL& hal;
 
 
@@ -1011,4 +1012,88 @@ void AP_Logger::Write_OADijkstra(uint8_t state, uint8_t error_id, uint8_t curr_p
         oa_lng      : oa_dest.lng
     };
     WriteBlock(&pkt, sizeof(pkt));
+}
+
+void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
+
+    optimAero *oa_ = AP::oa();
+    AP_Int8 typeOA;
+
+    for(uint8_t i=0; i<oa_->num_oa_connections(); i++){
+        
+        typeOA = oa_->get_type(i);
+
+        if(typeOA == optimAero::optimAero_TYPE_ARDUINO){
+
+            switch (msg_num)
+            {
+            case 0:
+            {
+                //hrt beat
+                const struct log_externalHeartbeat pkt = {
+                    LOG_PACKET_HEADER_INIT(LOG_OA_HRT_MSG),
+                    time_us : AP_HAL::micros64(),
+                    oaID : 0,
+                    badChecksums : oa_->get_badChecksums(i),
+                    unknownIds : oa_->get_IDs(i)
+                };
+                WriteBlock(&pkt, sizeof(pkt));
+            }break;
+
+            case 1:
+            {
+                //thermister 
+                const struct log_oaThermister pkt = {
+                    LOG_PACKET_HEADER_INIT(LOG_OA_TEMP_MSG),
+                    time_us : AP_HAL::micros64(),
+                    temp_1 : oa_->get_temperature_value(i,0),
+                    temp_2 : oa_->get_temperature_value(i,1),
+                    temp_3 : oa_->get_temperature_value(i,2),
+                    temp_4 : oa_->get_temperature_value(i,3)
+                };
+                WriteBlock(&pkt, sizeof(pkt));
+            }break;
+
+            /*case 2:
+            {
+                //analog 
+                struct log_oaAnalog pkt = {
+                    LOG_PACKET_HEADER_INIT(LOG_OA_ANAL_MSG),
+                    time_us : AP_HAL::micros64()
+                };
+                for(int j=0; j<10; j++){
+                    pkt.analog[j] = oa_->get_analog_value(i,j);
+                }
+
+                WriteBlock(&pkt, sizeof(pkt));
+
+            }break;
+            */
+
+            default:
+                break;
+            }
+
+        }else if(typeOA == optimAero::optimAero_TYPE_EXTRC){
+            switch (msg_num)
+            {
+            case 0:
+                {
+                    //heartbeat
+                    const struct log_externalHeartbeat pkt = {
+                    LOG_PACKET_HEADER_INIT(LOG_OA_HRT_MSG),
+                        time_us :       AP_HAL::micros64(),
+                        oaID :          1, /*extrc is id 1*/
+                        badChecksums :  oa_->get_badChecksums(i),
+                        unknownIds :    oa_->get_IDs(i)
+                    };
+                    WriteBlock(&pkt, sizeof(pkt));
+                }break;
+                
+            default:
+                break;
+            }
+        }else{/*nothing*/}
+
+    }
 }

@@ -586,6 +586,11 @@ public:
     UserParameters user_parameters;
 #endif
 
+#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    optimAero oa_module;
+#endif
+
+
 #if AUTOTUNE_ENABLED == ENABLED
     // we need a pointer to autotune for the G2 table
     void *autotune_ptr;

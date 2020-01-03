@@ -1213,6 +1213,73 @@ struct PACKED log_Arm_Disarm {
     uint8_t  arm_state;
     uint16_t arm_checks;
 };
+///////////////////////////////////////////////////////////////
+struct PACKED log_externalHeartbeat {
+  LOG_PACKET_HEADER;
+  uint64_t time_us;
+  uint8_t  oaID;          //B
+  uint32_t badChecksums; // I
+  uint32_t unknownIds; 
+};
+#define LOG_OA_HRT_LABELS "TimeUS,ID,cks,uId"
+#define LOG_OA_HRT_FMT    "QBII"
+#define LOG_OA_HRT_UNITS  "svvv"
+#define LOG_OA_HRT_MULTS  "F000"
+///////////////////////////////////////////////////////////////
+struct PACKED log_oaDatalink{
+  LOG_PACKET_HEADER;
+  uint64_t time_us;
+  uint32_t badChecksums;
+  uint32_t unknownIds;
+};
+#define LOG_OA_DATA_LABELS "TimeUS,cks,uId"
+#define LOG_OA_DATA_FMT    "QII"
+#define LOG_OA_DATA_UNITS  "svv"
+#define LOG_OA_DATA_MULTS  "F00"
+////////////////////////////////////////////////////////////////
+struct PACKED log_oaAnalog{
+  LOG_PACKET_HEADER;
+  uint64_t time_us;
+  uint16_t analog[10];
+};
+#define LOG_OA_ANAL_LABELS "TimeUS,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9"
+#define LOG_OA_ANAL_FMT    "QHHHHHHHHHH"
+#define LOG_OA_ANAL_UNITS  "svvvvvvvvvv"
+#define LOG_OA_ANAL_MULTS  "F0000000000"
+//////////////////////////////////////////////////////////////////
+struct PACKED log_oaThermister{
+  LOG_PACKET_HEADER;
+  uint64_t time_us;
+  float temp_1;
+  float temp_2;
+  float temp_3;
+  float temp_4;
+};
+#define LOG_OA_TEMP_LABELS "TimeUS,t1,t2,t3,t4"
+#define LOG_OA_TEMP_FMT    "Qffff"
+#define LOG_OA_TEMP_UNITS  "svvvv"
+#define LOG_OA_TEMP_MULTS  "F0000"
+////////////////////////////////////////////////////////////////////
+/*
+heartbeat:
+    uint32_t        badChecksum; //  I   : uint32_t
+    uint32_t        unknownIDs;
+    uint32_t        missedAP;
+    unsigned short  armStatus; //  H   : uint16_t
+
+batterycell:
+  unsigned short cell[48]; // 8 batteries - each with 6 cell is max -> N*3
+analog data:
+  unsigned short data[10]; // message to store analog pin readings - could be used for anything -> N
+
+temperature:
+  float tempF[4]; ->   f   : float
+
+  a   : int16_t[32]
+  n   : char[4]
+  N   : char[16]
+  Z   : char[64]
+*/
 
 // FMT messages define all message formats other than FMT
 // UNIT messages define units which can be referenced by FMTU messages
@@ -1408,6 +1475,18 @@ struct PACKED log_Arm_Disarm {
       "OABR","QBHHfLLLL","TimeUS,Active,DesYaw,Yaw,Mar,DLat,DLng,OALat,OALng", "sbddmDUDU", "F----GGGG" }, \
     { LOG_OA_DIJKSTRA_MSG, sizeof(log_OADijkstra), \
       "OADJ","QBBBBLLLL","TimeUS,State,Err,CurrPoint,TotPoints,DLat,DLng,OALat,OALng", "sbbbbDUDU", "F----GGGG" }, \
+    { LOG_OA_HRT_MSG, sizeof(log_externalHeartbeat), \
+      "EHRT", LOG_OA_HRT_FMT, LOG_OA_HRT_LABELS, LOG_OA_HRT_UNITS, LOG_OA_HRT_MULTS }, \
+    { LOG_OA_TEMP_MSG, sizeof(log_oaThermister), \
+      "ETMP", LOG_OA_TEMP_FMT, LOG_OA_TEMP_LABELS, LOG_OA_TEMP_UNITS, LOG_OA_TEMP_MULTS }
+
+/* HAD TO TAKE THIS OUT
+    { LOG_OA_ANAL_MSG, sizeof(log_oaAnalog), \
+      "ANAL", LOG_OA_ANAL_FMT, LOG_OA_ANAL_LABELS, LOG_OA_ANAL_UNITS, LOG_OA_ANAL_MULTS }, \
+*/
+
+// messages for more advanced boards
+#define LOG_EXTRA_STRUCTURES \
     { LOG_IMU2_MSG, sizeof(log_IMU), \
       "IMU2",  IMU_FMT,     IMU_LABELS, IMU_UNITS, IMU_MULTS }, \
     { LOG_IMU3_MSG, sizeof(log_IMU), \
@@ -1723,9 +1802,10 @@ enum LogMessages : uint8_t {
     LOG_ARM_DISARM_MSG,
     LOG_OA_BENDYRULER_MSG,
     LOG_OA_DIJKSTRA_MSG,
-
+    LOG_OA_HRT_MSG,
+    LOG_OA_TEMP_MSG, 
     _LOG_LAST_MSG_
-};
+};//LOG_OA_ANAL_MSG, //cant fit data_msg TBD
 
 static_assert(_LOG_LAST_MSG_ <= 255, "Too many message formats");
 
@@ -1733,3 +1813,25 @@ enum LogOriginType {
     ekf_origin = 0,
     ahrs_home = 1
 };
+
+/*
+#define LOG_OA_HRT_LABELS "TimeUS,cks,uId,mAP,arm"
+#define LOG_OA_HRT_FMT    "QHHHH"
+#define LOG_OA_HRT_UNITS  "svvvv"
+#define LOG_OA_HRT_MULTS  "F0000"
+
+#define LOG_OA_DATA_LABELS "TimeUS,cks,uId"
+#define LOG_OA_DATA_FMT    "QHH"
+#define LOG_OA_DATA_UNITS  "svv"
+#define LOG_OA_DATA_MULTS  "F00"
+
+#define LOG_OA_ANAL_LABELS "TimeUS,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10"
+#define LOG_OA_ANAL_FMT    "QHHHHHHHHH"
+#define LOG_OA_ANAL_UNITS  "svvvvvvvvv"
+#define LOG_OA_ANAL_MULTS  "F000000000"
+
+#define LOG_OA_TEMP_LABELS "TimeUS,t1,t2,t3,t4"
+#define LOG_OA_TEMP_FMT    "QHHHH"
+#define LOG_OA_TEMP_UNITS  "svvvv"
+#define LOG_OA_TEMP_MULTS  "F0000"
+*/

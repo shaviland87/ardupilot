@@ -259,7 +259,7 @@ void KDECAN_sniffer::loop(void)
 
 void KDECAN_sniffer::print_stats(void)
 {
-    hal.console->printf("%u\n", (unsigned)AP_HAL::micros());
+    hal.console->printf("micros: %u\n", (unsigned)AP_HAL::micros());
     for (uint16_t i=0;i<100;i++) {
         if (counters[i].frame_id == 0) {
             break;
@@ -311,8 +311,11 @@ void loop(void)
     if (now - last_print_ms >= 1000) {
         last_print_ms = now;
         sniffer.print_stats();
+        sniffer.send_enumeration(0);
+
     }
 
+    #if 0
     if (hal.console->available() >= 3) {
         char c = hal.console->read();
 
@@ -332,12 +335,13 @@ void loop(void)
             hal.scheduler->reboot(false);
         }
     }
+    #endif
 
     // auto-reboot for --upload
-    if (hal.console->available() > 50) {
+    /*if (hal.console->available() > 50) {
         hal.console->printf("rebooting\n");
         hal.scheduler->reboot(false);
-    }
+    }*/
 }
 
 AP_HAL_MAIN();

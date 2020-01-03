@@ -20,6 +20,7 @@
 #include <SITL/SIM_MotorBoat.h>
 #include <SITL/SIM_CRRCSim.h>
 #include <SITL/SIM_Gazebo.h>
+#include <SITL/SIM_Optim.h>
 #include <SITL/SIM_last_letter.h>
 #include <SITL/SIM_JSBSim.h>
 #include <SITL/SIM_Tracker.h>
@@ -140,6 +141,8 @@ static const struct {
     { "airsim",             AirSim::create},
     { "scrimmage",          Scrimmage::create },
     { "webots",             Webots::create },
+    { "optim",              Optim::create },
+
 
 };
 

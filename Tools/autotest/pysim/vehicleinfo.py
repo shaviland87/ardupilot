@@ -92,6 +92,14 @@ class VehicleInfo(object):
                 "default_params_filename": ["default_params/copter.parm",
                                             "default_params/gazebo-iris.parm"],
             },
+	    "optim-airbook": {
+                "waf_target": "bin/arducopter",
+                "default_params_filename": ["default_params/copter.parm"],
+            },
+ 	    "optim-hex": {
+                "waf_target": "bin/arducopter",
+                "default_params_filename": ["default_params/copter.parm"],
+            },
             "airsim-copter": {
                 "waf_target": "bin/arducopter",
                 "default_params_filename": ["default_params/copter.parm",
@@ -301,7 +309,7 @@ class VehicleInfo(object):
         if frame in frames:
             ret = self.options[vehicle]["frames"][frame]
         else:
-            for p in ["octa", "tri", "y6", "firefly", "heli", "gazebo", "last_letter", "jsbsim", "quadplane", "plane-elevon", "plane-vtail", "plane", "airsim"]:
+            for p in ["octa", "tri", "y6", "firefly", "heli", "gazebo", "last_letter", "jsbsim", "quadplane", "plane-elevon", "plane-vtail", "plane", "airsim","optim"]:
                 if frame.startswith(p):
                     ret = self.options[vehicle]["frames"][p]
                     break
