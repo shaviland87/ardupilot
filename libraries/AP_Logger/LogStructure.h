@@ -1342,11 +1342,12 @@ struct PACKED log_oaThermister{
   float temp_2;
   float temp_3;
   float temp_4;
+  uint8_t arm_data;
 };
-#define LOG_OA_TEMP_LABELS "TimeUS,t1,t2,t3,t4"
-#define LOG_OA_TEMP_FMT    "Qffff"
-#define LOG_OA_TEMP_UNITS  "svvvv"
-#define LOG_OA_TEMP_MULTS  "F0000"
+#define LOG_OA_TEMP_LABELS "TimeUS,t1,t2,t3,t4,arm"
+#define LOG_OA_TEMP_FMT    "QffffB"
+#define LOG_OA_TEMP_UNITS  "svvvvv"
+#define LOG_OA_TEMP_MULTS  "F00000"
 ////////////////////////////////////////////////////////////////////
 
 // messages for all boards

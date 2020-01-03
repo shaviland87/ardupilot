@@ -17,6 +17,14 @@
 #define MASK_GORK                   (1<<7)
 #define MASK_EM_ALL                  0xFF
 
+#define MASK_ARDUINO_ARM1           (1<<0)
+#define MASK_ARDUINO_ARM2           (1<<1)
+#define MASK_ARDUINO_ARM3           (1<<2)
+#define MASK_ARDUINO_ARM4           (1<<3)
+#define MASK_ARDUINO_ARM5           (1<<4)
+#define MASK_ARDUINO_ARM6           (1<<5)
+
+
 #define OPTIM_MESSAGE_SYNC              0xa1
 #define OPTIM_MESSAGE_CSUM_SIZE         2
 #define OPTIM_MESSAGE_HDR_SIZE          3
