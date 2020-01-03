@@ -12,13 +12,13 @@
 #include <AC_AttitudeControl/AC_PosControl.h>
 #include <AP_RSSI/AP_RSSI.h>
 #include <AP_GPS/AP_GPS.h>
+#include <AP_OA_EXT/optimAero.h>
 
 #include "AP_Logger.h"
 #include "AP_Logger_File.h"
 #include "AP_Logger_MAVLink.h"
 #include "LoggerMessageWriter.h"
 
-#include <AP_OA_EXT/optimAero.h>
 extern const AP_HAL::HAL& hal;
 
 
@@ -1015,7 +1015,7 @@ void AP_Logger::Write_OADijkstra(uint8_t state, uint8_t error_id, uint8_t curr_p
 }
 
 void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
-
+    
     optimAero *oa_ = AP::oa();
     AP_Int8 typeOA;
 
@@ -1054,8 +1054,9 @@ void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
                 WriteBlock(&pkt, sizeof(pkt));
             }break;
 
-            /*case 2:
+            case 2:
             {
+                /*
                 //analog 
                 struct log_oaAnalog pkt = {
                     LOG_PACKET_HEADER_INIT(LOG_OA_ANAL_MSG),
@@ -1066,9 +1067,9 @@ void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
                 }
 
                 WriteBlock(&pkt, sizeof(pkt));
+                */
 
             }break;
-            */
 
             default:
                 break;
@@ -1083,7 +1084,7 @@ void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
                     const struct log_externalHeartbeat pkt = {
                     LOG_PACKET_HEADER_INIT(LOG_OA_HRT_MSG),
                         time_us :       AP_HAL::micros64(),
-                        oaID :          1, /*extrc is id 1*/
+                        oaID :          1, //extrc is id 1//
                         badChecksums :  oa_->get_badChecksums(i),
                         unknownIds :    oa_->get_IDs(i)
                     };
@@ -1093,7 +1094,10 @@ void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
             default:
                 break;
             }
-        }else{/*nothing*/}
+        }else{
+            //nothing
+        }
 
     }
+    
 }

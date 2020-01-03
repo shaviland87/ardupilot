@@ -260,7 +260,7 @@ void optimAero::Log_optimAero()
     AP_Logger *logger = AP_Logger::get_singleton();
     logger->Write_OA_Arduino(0); //hrt
 	logger->Write_OA_Arduino(1); //thermister
-	logger->Write_OA_Arduino(2); //analog
+	//logger->Write_OA_Arduino(2); //analog
 
 
 }
