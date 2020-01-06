@@ -95,6 +95,20 @@ void optimAero::init(void)
 
 }
 
+void optimAero::update400hz(void){
+	
+	for(uint8_t i=0; i < num_instances; i++){
+		if(drivers[i] != nullptr) {
+			if(params[i].type == optimAero_TYPE_NONE){
+				//allow user to disable at run time
+				state[i].status = optimAero_NotConnected;
+				continue;
+			}
+			drivers[i]->update400hz();
+		}
+
+	}//end of for	
+}
 
 void optimAero::updateFast(void)
 {

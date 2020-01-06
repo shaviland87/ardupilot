@@ -13,7 +13,7 @@ void Copter::userhook_init()
     //hal.uartE->flush();
     //hal.uartE->printf("init uarte\n");
 
-    #if 1==1
+    #if 1==0
         hal.uartD->begin(115200,256,256);
         printf("starting uartD\n");
     #endif
@@ -47,7 +47,7 @@ void Copter::userhook_MediumLoop()
     #endif
 
 
-    #if 1==1
+    #if 1==0
 
         int bytesAvail = 0;
         while(hal.uartD->available() && bytesAvail < 10){
@@ -91,5 +91,16 @@ void Copter::userhook_auxSwitch2(uint8_t ch_flag)
 void Copter::userhook_auxSwitch3(uint8_t ch_flag)
 {
     // put your aux switch #3 handler here (CHx_OPT = 49)
+}
+#endif
+
+
+
+#ifdef USERHOOK_400HZ
+void Copter::userhook_400hz(){
+        
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        update_optimaero_400Hz();
+    #endif
 }
 #endif

@@ -10,6 +10,7 @@
     void update_optimaero_Fast(void);
     void update_optimaero_10Hz(void);
     void update_optimaero_Slow(void);
+    void update_optimaero_400Hz(void);
 
 
 

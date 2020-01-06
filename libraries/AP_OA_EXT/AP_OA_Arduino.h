@@ -25,6 +25,7 @@ public:
 	static bool detect(uint8_t serial_instance);
 
 	//update state
+	void update400hz(void) override;
 	void updateFast(void) override;
 	void update10Hz(void) override;
 	void updateSlow(void) override;

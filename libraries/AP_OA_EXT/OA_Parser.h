@@ -23,29 +23,35 @@ class OA_Parser {
 
     unsigned int fletcher16( unsigned char *data, int len )
     {        
-        unsigned int check;
-        unsigned int sum1 = 0xff, sum2 = 0xff;
+        if(len > 0)
+        {             
+            unsigned int check;
+            unsigned int sum1 = 0xff, sum2 = 0xff;
 
-        while (len) {
-            int tlen = len > 21 ? 21 : len;
-            len -= tlen;
+            while (len) {
+                int tlen = len > 21 ? 21 : len;
+                len -= tlen;
 
-            do {
-                sum1 += *data++;
-                sum2 += sum1;
-            } while (--tlen);
+                do {
+                    sum1 += *data++;
+                    sum2 += sum1;
+                } while (--tlen);
 
+                sum1 = (sum1 & 0xff) + (sum1 >> 8);
+                sum2 = (sum2 & 0xff) + (sum2 >> 8);
+            }
+
+            // Second reduction step to reduce sums to 8 bits
             sum1 = (sum1 & 0xff) + (sum1 >> 8);
             sum2 = (sum2 & 0xff) + (sum2 >> 8);
+
+            check = (unsigned int)(sum1 << 8) | (unsigned int)(sum2);
+
+            return check;
+        }else{
+            return 0; //to keep code from bricking
         }
-
-        // Second reduction step to reduce sums to 8 bits
-        sum1 = (sum1 & 0xff) + (sum1 >> 8);
-        sum2 = (sum2 & 0xff) + (sum2 >> 8);
-
-        check = (unsigned int)(sum1 << 8) | (unsigned int)(sum2);
-
-        return check;
+       
     }
 
     uint32_t optim_serialWrite(AP_HAL::UARTDriver *uart,  uint8_t* ptr, uint32_t len ){

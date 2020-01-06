@@ -23,11 +23,13 @@ public:
 	static bool detect(uint8_t serial_instance);
 
 	//update state
+	void update400hz(void) override;
 	void updateFast(void) override;
 	void update10Hz(void) override;
 	void updateSlow(void) override;
 	void populateBuffer(OA_Parser &parser_in) override; //sim only
 	void getRcOut(void);
+	void updateMotorInterlock(void);
 
 	void checkForData(void);	/*function to read serial data and update structures*/
 

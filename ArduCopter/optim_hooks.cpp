@@ -26,6 +26,10 @@
         
     }
 
+    void Copter::update_optimaero_400Hz(void){
+        g2.oa_module.update400hz();
+    }
+
 #if OPTIMAERO_CHIRP_ENABLED == ENABLED
 
 /** The Chirp class produces a Chirp frequency-sweep profile for which

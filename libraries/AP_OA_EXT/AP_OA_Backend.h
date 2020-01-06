@@ -19,6 +19,7 @@ public:
 	virtual ~AP_OA_Backend(void) {}
 
 	//update the state
+	virtual void update400hz() = 0;
 	virtual void updateFast() = 0;
 	virtual void update10Hz() = 0;
 	virtual void updateSlow() = 0;

@@ -183,6 +183,9 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 #if WINCH_ENABLED == ENABLED
     SCHED_TASK(winch_update,          10,     50),
 #endif
+#ifdef USERHOOK_400HZ 
+    SCHED_TASK(userhook_400hz, 400, 100),
+#endif
 #ifdef USERHOOK_FASTLOOP
     SCHED_TASK(userhook_FastLoop,    100,     75),
 #endif
@@ -247,6 +250,12 @@ void Copter::fast_loop()
     // run EKF state estimator (expensive)
     // --------------------
     read_AHRS();
+
+    // userhook 400hz call
+    /*#ifdef USERHOOK_400HZ 
+        userhook_400hz();
+    #endif
+    */
 
 #if FRAME_CONFIG == HELI_FRAME
     update_heli_control_dynamics();

@@ -58,6 +58,10 @@ bool AP_OA_Arduino::detect(uint8_t serial_instance)
 	return AP::serialmanager().find_serial(AP_SerialManager::SerialProtocol_optimAero, serial_instance) != nullptr;
 }
 
+void AP_OA_Arduino::update400hz(void){
+	//do nothing
+}
+
 void AP_OA_Arduino::updateFast(void)
 {
 	//uart->write("Hello\n");

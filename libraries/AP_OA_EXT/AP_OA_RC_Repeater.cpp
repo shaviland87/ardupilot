@@ -29,6 +29,11 @@ AP_OA_RC_Repeater::AP_OA_RC_Repeater(optimAero::optimAero_State &_state,
 	AP_OA_Backend(_state,_params)
 {
 
+	motor_out_.sync 		= OPTIM_MESSAGE_SYNC;
+	motor_out_.messageID 	= ID_EXTERNAL_AP_RC_OUT;
+	motor_out_.messageSize 	= sizeof(external_ap_rc_out_ref);
+	motor_out_.count 		= 0;
+
 	const AP_SerialManager &serial_manager = AP::serialmanager();
 	uart = serial_manager.find_serial(AP_SerialManager::SerialProtocol_optimAero, serial_instance);
 
@@ -55,31 +60,29 @@ bool AP_OA_RC_Repeater::detect(uint8_t serial_instance)
 	return AP::serialmanager().find_serial(AP_SerialManager::SerialProtocol_optimAero, serial_instance) != nullptr;
 }
 
-void AP_OA_RC_Repeater::updateFast(void)
-{
-	/* main function that gets called by ArduCopter at some rate*/
-		
-	/* need something to listen for rc repeater heartbeat */
-	/* need something to send commands to rc repeater heartbeat */
-	/* something to log rc repeater state */
+void AP_OA_RC_Repeater::update400hz(void){
 	
-	//uart->write("Hello\n");
-	checkForData();
-}
-
-void AP_OA_RC_Repeater::update10Hz(void){
-
-	motor_out_.sync 		= OPTIM_MESSAGE_SYNC;
-	motor_out_.messageID 	= ID_EXTERNAL_AP_RC_OUT;
-	motor_out_.messageSize 	= sizeof(external_ap_rc_out_ref);
-	motor_out_.count++;
-	motor_out_.csum 		= parse_params_.fletcher16((unsigned char *)&motor_out_, motor_out_.messageSize - OPTIM_MESSAGE_CSUM_SIZE);
-
+	//send motor commands	
+	getRcOut(); // populates the rc outputs  -> probably should have another loop@400hz that does this
 	if(nullptr != uart){
 		parse_params_.optim_serialWrite(uart, (uint8_t *)&motor_out_, motor_out_.messageSize);
 	}
 }
+
+void AP_OA_RC_Repeater::updateFast(void)
+{
+	checkForData(); /*read data from repeater - nothing gets sent fast back*/
+}
+
+void AP_OA_RC_Repeater::update10Hz(void){
+	/*probably dont need to do this but just in case values get mod'd somehow*/
+	motor_out_.sync 		= OPTIM_MESSAGE_SYNC;
+	motor_out_.messageID 	= ID_EXTERNAL_AP_RC_OUT;
+	motor_out_.messageSize 	= sizeof(external_ap_rc_out_ref);
+}
 void AP_OA_RC_Repeater::updateSlow(void){
+
+	updateMotorInterlock();
 
 	if(hrt_beat_rcvd_ < HRT_RATE_HZ*CHECK_HEART_RATE_HZ){
 		missed_hearts_++;
@@ -114,9 +117,17 @@ void AP_OA_RC_Repeater::populateBuffer(OA_Parser &parser_in){
 
 void AP_OA_RC_Repeater::getRcOut(void){
 
+	motor_out_.count++;
+
 	for(int i=0;i<EXTERNAL_AP_NUM_MOT; i++){
 		motor_out_.rc[i] = 	hal.rcout->read(i);
 	}
+	/*interlock is updated at slower rate*/
+	motor_out_.csum 		= parse_params_.fletcher16((unsigned char *)&motor_out_, motor_out_.messageSize - OPTIM_MESSAGE_CSUM_SIZE);
+
+}
+
+void AP_OA_RC_Repeater::updateMotorInterlock(void){
 	motor_out_.motor_enable = hal.util->safety_switch_state(); //read state of switch
 }
 

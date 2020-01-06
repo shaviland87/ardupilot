@@ -80,6 +80,7 @@ public:
 	void set_log_optimAero(uint32_t log_oa_bit) {_log_oa_bit = log_oa_bit;}
 
 	// update state for all optimAero external units-> called in either mainloop or usercode -> this needs to be overriden in gerps
+	void update400hz(void);
 	void updateFast(void);
 	void update10Hz(void);
 	void updateSlow(void);
