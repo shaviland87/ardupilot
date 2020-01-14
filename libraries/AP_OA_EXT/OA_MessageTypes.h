@@ -149,6 +149,21 @@ struct MsgThermistersData_ref {
   unsigned short csum;		
 };
 
+#define ID_MESSAGE_BATT_CELL_SPLIT 108
+#pragma pack(push, 1) // exact fit - no padding
+struct MsgBattCellSplit_ref {
+  unsigned char sync;
+  unsigned char messageID;
+  unsigned char messageSize; //MAX= 4 + 30*2 + 4 = 68 bytes
+  unsigned char count;
+
+  unsigned short cell[30]; // each can read 5x6 cells
+
+  unsigned short arduinoNumber;
+  unsigned short csum;
+};
+#pragma pack(pop) //back to whatever the previous packing mode was 
+
 
 #ifdef __cplusplus
 }

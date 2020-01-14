@@ -39,6 +39,7 @@ public:
 		optimAero_TYPE_EXTCOMP = 2,
 		optimAero_TYPE_EXTNAV = 3,
 		optimAero_TYPE_EXTRC = 4,
+		optimAero_TYPE_MULTI = 5,
 	};
 
 	enum optimAero_Status {
@@ -47,7 +48,9 @@ public:
 		optimAero_ArduinoGood,
 		optimAero_RepeaterGood,
 		optimAero_ArduinoBad,
-		optimAero_RepeaterBad
+		optimAero_RepeaterBad,
+		optimAero_MultiGood,
+		optimAero_MultiBad
 	};
 
     struct ardu_cells {

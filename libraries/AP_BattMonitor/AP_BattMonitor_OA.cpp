@@ -56,7 +56,7 @@ AP_BattMonitor_OA::read()
 
     for(uint8_t i = 0; i< oa_->num_oa_connections(); i++){
         typeOA = oa_->get_type(i);
-        if(typeOA == optimAero::optimAero_TYPE_ARDUINO)
+        if(typeOA == optimAero::optimAero_TYPE_ARDUINO || typeOA == optimAero::optimAero_TYPE_MULTI)
         {
             //we could potentially have batter data
             optimAero::ardu_cells curr_cells    = oa_->get_batt_cells(i);

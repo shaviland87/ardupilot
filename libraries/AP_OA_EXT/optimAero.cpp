@@ -11,6 +11,7 @@
 //supported features
 #include "AP_OA_Arduino.h"
 #include "AP_OA_RC_Repeater.h"
+#include "AP_OA_Multi_Repeater.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -201,6 +202,11 @@ void optimAero::detect_instance(uint8_t instance, uint8_t& serial_instance)
 				drivers[instance] = new AP_OA_RC_Repeater(state[instance], params[instance], serial_instance++);
 			}
 			break;
+		case optimAero_TYPE_MULTI:
+			if(AP_OA_Multi_Repeater::detect(serial_instance)) {
+				drivers[instance] = new AP_OA_Multi_Repeater(state[instance], params[instance], serial_instance++);
+			}
+			break;	
 		default:
 			break;
 
