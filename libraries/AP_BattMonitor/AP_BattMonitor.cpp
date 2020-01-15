@@ -272,6 +272,8 @@ AP_BattMonitor::read()
         }
     }
 
+    update_low_cell();
+
     AP_Logger *logger = AP_Logger::get_singleton();
     if (logger->should_log(_log_battery_bit)) {
         logger->Write_Current();
@@ -447,14 +449,39 @@ bool AP_BattMonitor::has_cell_voltages(const uint8_t instance) const
     return false;
 }
 
+void AP_BattMonitor::update_low_cell(void)
+{
+
+    for(int i=0; i<_num_instances; i++)
+    {
+        if (drivers[i] != nullptr) {
+            if( drivers[i]->has_cell_voltages()){
+                //grab lowest cell 
+                uint16_t lowCell=6000;
+                for(int j=0; j<10;j++){
+                    if( state[i].cell_voltages.cells[j] < lowCell && state[i].cell_voltages.cells[j] > 1   ){
+                        lowCell = state[i].cell_voltages.cells[j];
+                    }
+                }
+                //lowCell is now updated
+                low_cell_voltages.cells[i] = lowCell;
+            }
+        }
+    }
+}
+
 // return the current cell voltages, returns the first monitor instances cells if the instance is out of range
 const AP_BattMonitor::cells & AP_BattMonitor::get_cell_voltages(const uint8_t instance) const
 {
+    /*
     if (instance >= AP_BATT_MONITOR_MAX_INSTANCES) {
         return state[AP_BATT_PRIMARY_INSTANCE].cell_voltages;
     } else {
         return state[instance].cell_voltages;
-    }
+    }*/
+ 
+    return low_cell_voltages;
+
 }
 
 // returns true if there is a temperature reading

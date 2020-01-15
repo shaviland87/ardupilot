@@ -152,6 +152,8 @@ public:
     bool has_cell_voltages(const uint8_t instance) const;
     const cells & get_cell_voltages() const { return get_cell_voltages(AP_BATT_PRIMARY_INSTANCE); }
     const cells & get_cell_voltages(const uint8_t instance) const;
+    cells       low_cell_voltages;             // battery cell voltages in millivolts, 10 cells matches the MAVLink spec
+    void update_low_cell(void);
 
     // temperature
     bool get_temperature(float &temperature) const { return get_temperature(temperature, AP_BATT_PRIMARY_INSTANCE); }

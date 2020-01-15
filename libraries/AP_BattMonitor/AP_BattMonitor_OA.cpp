@@ -4,7 +4,7 @@
 #include "AP_BattMonitor.h"
 #include "AP_BattMonitor_OA.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 /*
 reads data from external source
  */
@@ -60,12 +60,14 @@ AP_BattMonitor_OA::read()
         {
             //we could potentially have batter data
             optimAero::ardu_cells curr_cells    = oa_->get_batt_cells(i);
-            _state.voltage                      = oa_->get_batt_voltage(i);
 
+            //this voltage is total amongst all the cells
+            //_state.voltage                      = oa_->get_batt_voltage(i);
 
             // we need to fill this battery type
             switch(_instance_of_OA){
                 case 0:{
+                    /*need to contain zero - five here for cells 1-6 of batt 1 */
                 _state.cell_voltages.cells[0] = curr_cells.cells[0];
                 _state.cell_voltages.cells[1] = curr_cells.cells[1];
                 _state.cell_voltages.cells[2] = curr_cells.cells[2];
@@ -74,9 +76,10 @@ AP_BattMonitor_OA::read()
                 _state.cell_voltages.cells[5] = curr_cells.cells[5];
                 _state.cell_voltages.cells[6] = curr_cells.cells[6];
                 _state.cell_voltages.cells[7] = curr_cells.cells[7];
-                _state.cell_voltages.cells[8] = curr_cells.cells[8];
-                _state.cell_voltages.cells[9] = curr_cells.cells[9];
-                //_state.voltage                = 12;
+                _state.cell_voltages.cells[8] = 0;
+                _state.cell_voltages.cells[9] = 0;
+                
+                _state.voltage                = oa_->get_batt_voltage(i,0);
                 _state.last_time_micros       = AP_HAL::micros();
                 _state.current_amps           = 0;
                 _state.healthy                = 1;
@@ -84,73 +87,85 @@ AP_BattMonitor_OA::read()
                 }break;
 
                 case 1:{
-                _state.cell_voltages.cells[0] = curr_cells.cells[10];
-                _state.cell_voltages.cells[1] = curr_cells.cells[11];
-                _state.cell_voltages.cells[2] = curr_cells.cells[12];
-                _state.cell_voltages.cells[3] = curr_cells.cells[13];
-                _state.cell_voltages.cells[4] = curr_cells.cells[14];
-                _state.cell_voltages.cells[5] = curr_cells.cells[15];
-                _state.cell_voltages.cells[6] = curr_cells.cells[16];
-                _state.cell_voltages.cells[7] = curr_cells.cells[17];
-                _state.cell_voltages.cells[8] = curr_cells.cells[18];
-                _state.cell_voltages.cells[9] = curr_cells.cells[19];
-                //_state.voltage                = 12;
+                /*need to contain 8-13 here for cells 1-6 of batt 2 */
+                _state.cell_voltages.cells[0] = curr_cells.cells[8];
+                _state.cell_voltages.cells[1] = curr_cells.cells[9];
+                _state.cell_voltages.cells[2] = curr_cells.cells[10];
+                _state.cell_voltages.cells[3] = curr_cells.cells[11];
+                _state.cell_voltages.cells[4] = curr_cells.cells[12];
+                _state.cell_voltages.cells[5] = curr_cells.cells[13];
+                _state.cell_voltages.cells[6] = curr_cells.cells[14];
+                _state.cell_voltages.cells[7] = curr_cells.cells[15];
+                _state.cell_voltages.cells[8] = 0;
+                _state.cell_voltages.cells[9] = 0;
+
+                _state.voltage                = oa_->get_batt_voltage(i,1);
                 _state.last_time_micros       = AP_HAL::micros();
                 _state.current_amps           = 0;
                 _state.healthy                = 1;                    
                 }break;
                 
                 case 2:{
-                _state.cell_voltages.cells[0] = curr_cells.cells[20];
-                _state.cell_voltages.cells[1] = curr_cells.cells[21];
-                _state.cell_voltages.cells[2] = curr_cells.cells[22];
-                _state.cell_voltages.cells[3] = curr_cells.cells[23];
-                _state.cell_voltages.cells[4] = curr_cells.cells[24];
-                _state.cell_voltages.cells[5] = curr_cells.cells[25];
-                _state.cell_voltages.cells[6] = curr_cells.cells[26];
-                _state.cell_voltages.cells[7] = curr_cells.cells[27];
-                _state.cell_voltages.cells[8] = curr_cells.cells[28];
-                _state.cell_voltages.cells[9] = curr_cells.cells[29];
-                //_state.voltage                = 12;
+                /*need to contain 16-21 here for cells 1-6 of batt 3 */
+                _state.cell_voltages.cells[0] = curr_cells.cells[16];
+                _state.cell_voltages.cells[1] = curr_cells.cells[17];
+                _state.cell_voltages.cells[2] = curr_cells.cells[18];
+                _state.cell_voltages.cells[3] = curr_cells.cells[19];
+                _state.cell_voltages.cells[4] = curr_cells.cells[20];
+                _state.cell_voltages.cells[5] = curr_cells.cells[21];
+                _state.cell_voltages.cells[6] = curr_cells.cells[22];
+                _state.cell_voltages.cells[7] = curr_cells.cells[23];
+                _state.cell_voltages.cells[8] = 0;
+                _state.cell_voltages.cells[9] = 0;
+
+                _state.voltage                = oa_->get_batt_voltage(i,2);
                 _state.last_time_micros       = AP_HAL::micros();    
                 _state.current_amps           = 0;
                 _state.healthy                = 1;                                
                 }
                 break;
                 case 3:{
-                _state.cell_voltages.cells[0] = curr_cells.cells[30];
-                _state.cell_voltages.cells[1] = curr_cells.cells[31];
-                _state.cell_voltages.cells[2] = curr_cells.cells[32];
-                _state.cell_voltages.cells[3] = curr_cells.cells[33];
-                _state.cell_voltages.cells[4] = curr_cells.cells[34];
-                _state.cell_voltages.cells[5] = curr_cells.cells[35];
-                _state.cell_voltages.cells[6] = curr_cells.cells[36];
-                _state.cell_voltages.cells[7] = curr_cells.cells[37];
-                _state.cell_voltages.cells[8] = curr_cells.cells[38];
-                _state.cell_voltages.cells[9] = curr_cells.cells[39];
-                //_state.voltage                = 12;
+                /*need to contain 24-29 here for cells 1-6 of batt 4 */
+                _state.cell_voltages.cells[0] = curr_cells.cells[24];
+                _state.cell_voltages.cells[1] = curr_cells.cells[25];
+                _state.cell_voltages.cells[2] = curr_cells.cells[26];
+                _state.cell_voltages.cells[3] = curr_cells.cells[27];
+                _state.cell_voltages.cells[4] = curr_cells.cells[28];
+                _state.cell_voltages.cells[5] = curr_cells.cells[29];
+                _state.cell_voltages.cells[6] = curr_cells.cells[30];
+                _state.cell_voltages.cells[7] = curr_cells.cells[31];
+                _state.cell_voltages.cells[8] = 0;
+                _state.cell_voltages.cells[9] = 0;
+
+                _state.voltage                = oa_->get_batt_voltage(i,3);
                 _state.last_time_micros       = AP_HAL::micros();    
                 _state.current_amps           = 0;
                 _state.healthy                = 1;                            
                 }break;
                 
                 case 4:{
-                _state.cell_voltages.cells[0] = curr_cells.cells[40];
-                _state.cell_voltages.cells[1] = curr_cells.cells[41];
-                _state.cell_voltages.cells[2] = curr_cells.cells[42];
-                _state.cell_voltages.cells[3] = curr_cells.cells[43];
-                _state.cell_voltages.cells[4] = curr_cells.cells[44];
-                _state.cell_voltages.cells[5] = curr_cells.cells[45];
-                _state.cell_voltages.cells[6] = curr_cells.cells[46];
-                _state.cell_voltages.cells[7] = curr_cells.cells[47];
-                _state.cell_voltages.cells[8] = curr_cells.cells[48]; //only going up to 48 cells == NUMCELL*NUMBATT
-                //_state.voltage                = 12;
+                 /* won't be used unless we have two arduinos need to contain zero - five here for cells 1-6 of batt 1 */
+                _state.cell_voltages.cells[0] = curr_cells.cells[32];
+                _state.cell_voltages.cells[1] = curr_cells.cells[33];
+                _state.cell_voltages.cells[2] = curr_cells.cells[34];
+                _state.cell_voltages.cells[3] = curr_cells.cells[35];
+                _state.cell_voltages.cells[4] = curr_cells.cells[36];
+                _state.cell_voltages.cells[5] = curr_cells.cells[37];
+                _state.cell_voltages.cells[6] = curr_cells.cells[38];
+                _state.cell_voltages.cells[7] = curr_cells.cells[39];
+                _state.cell_voltages.cells[8] = curr_cells.cells[40]; //only going up to 48 cells == NUMCELL*NUMBATT
+
+                _state.voltage                = oa_->get_batt_voltage(i,4);
                 _state.last_time_micros       = AP_HAL::micros();    
                 _state.current_amps           = 0;
                 _state.healthy                = 1;                            
                 }break;
                 
                 default:
+                    _state.healthy = 0;
+                    _state.voltage = 69;
+                    _state.current_amps = 0;
+                    _state.last_time_micros = AP_HAL::micros();
                 break;
             }
             
@@ -166,3 +181,33 @@ AP_BattMonitor_OA::read()
     */
 }
 
+
+/*
+  msgBatt.cell[0] = convertCellData(flvss1.getCell1());
+  msgBatt.cell[1] = convertCellData(flvss1.getCell2());
+  msgBatt.cell[2] = convertCellData(flvss1.getCell3());
+  msgBatt.cell[3] = convertCellData(flvss1.getCell4());
+  msgBatt.cell[4] = convertCellData(flvss1.getCell5());
+  msgBatt.cell[5] = convertCellData(flvss1.getCell6());
+  //skip 6,7
+  msgBatt.cell[8] = convertCellData(flvss2.getCell1());
+  msgBatt.cell[9] = convertCellData(flvss2.getCell2());
+  msgBatt.cell[10] = convertCellData(flvss2.getCell3());
+  msgBatt.cell[11] = convertCellData(flvss2.getCell4());
+  msgBatt.cell[12] = convertCellData(flvss2.getCell5());
+  msgBatt.cell[13] = convertCellData(flvss2.getCell6());
+  //skip 14,15
+  msgBatt.cell[16] = convertCellData(flvss3.getCell1());
+  msgBatt.cell[17] = convertCellData(flvss3.getCell2());
+  msgBatt.cell[18] = convertCellData(flvss3.getCell3());
+  msgBatt.cell[19] = convertCellData(flvss3.getCell4());
+  msgBatt.cell[20] = convertCellData(flvss3.getCell5());
+  msgBatt.cell[21] = convertCellData(flvss3.getCell6());
+  //skip 22,23
+  msgBatt.cell[24] = convertCellData(flvss4.getCell1());
+  msgBatt.cell[25] = convertCellData(flvss4.getCell2());
+  msgBatt.cell[26] = convertCellData(flvss4.getCell3());
+  msgBatt.cell[27] = convertCellData(flvss4.getCell4());
+  msgBatt.cell[28] = convertCellData(flvss4.getCell5());
+  msgBatt.cell[29] = convertCellData(flvss4.getCell6());
+*/

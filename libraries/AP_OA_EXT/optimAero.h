@@ -107,6 +107,7 @@ public:
 	//void set_batt_cells(ardu_cells &cell_)  {state[instance]->batt_cells = cell_;}	//sim only
 
 	float get_batt_voltage(uint8_t instance) const;	
+	float get_batt_voltage(uint8_t instance, uint8_t battNum) const;	
 
 	AP_OA_Backend *find_instance(void) const;
 

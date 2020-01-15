@@ -12,9 +12,9 @@
 #define MASK_ARDUINO_ANALOG         (1<<3)
 
 #define MASK_EXT_RC                 (1<<4)
-#define MASK_ARDUINO_LINKHEALTH     (1<<5)
-#define MASK_EXT_RC_LINKHEALTH      (1<<6)
-#define MASK_GORK                   (1<<7)
+#define MASK_ARDUINO_IGNOREARM      (1<<5)
+#define MASK_ARDUINO_IGNORETEMP     (1<<6)
+#define MASK_IGNORE_EXTRC           (1<<7)
 #define MASK_EM_ALL                  0xFF
 
 #define MASK_ARDUINO_ARM1           (1<<0)

@@ -68,6 +68,40 @@ Optim::Optim(const char *frame_str) :
     increment_arm_disconnect_   = 0;
     SEND_ARDUINO_               = true;
     hrt_cntr_                   = 0;
+
+    battery_data.cell[0]    = 3300;
+    battery_data.cell[1]    = 1300;
+    battery_data.cell[2]    = 2300;
+    battery_data.cell[3]    = 3300;
+    battery_data.cell[4]    = 3300;
+    battery_data.cell[5]    = 3300;
+    battery_data.cell[6]    = 3300;
+    battery_data.cell[7]    = 3300;
+    battery_data.cell[8]    = 3300;
+    battery_data.cell[9]    = 3300;
+
+    battery_data.cell[10]    = 300;
+    battery_data.cell[11]    = 3300;
+    battery_data.cell[12]    = 3300;
+    battery_data.cell[13]    = 3300;
+    battery_data.cell[14]    = 3300;
+    battery_data.cell[15]    = 3300;
+    battery_data.cell[16]    = 3300;
+    battery_data.cell[17]    = 3300;
+    battery_data.cell[18]    = 3300;
+    battery_data.cell[19]    = 3300;
+
+    battery_data.cell[20]    = 800;
+    battery_data.cell[21]    = 3300;
+    battery_data.cell[22]    = 3300;
+    battery_data.cell[23]    = 3300;
+    battery_data.cell[24]    = 3300;
+    battery_data.cell[25]    = 3300;
+    battery_data.cell[26]    = 3300;
+    battery_data.cell[27]    = 3300;
+    battery_data.cell[28]    = 3300;
+
+
 }
 
 /*
@@ -224,7 +258,7 @@ void Optim::update_slow_hz(void){
 
 
     // send a  messages at 1  Hz
-    if (now - send_report_last_ms >= (1000/10) ) {
+    if (now - send_report_last_ms >= (1000/1) ) {
         send_report_last_ms = now;
 
         optimAero *oa_ = AP::oa();
@@ -232,7 +266,7 @@ void Optim::update_slow_hz(void){
         for(uint8_t i = 0; i< oa_->num_oa_connections(); i++)
         {
             typeOA = oa_->get_type(i);
-            if(typeOA == optimAero::optimAero_TYPE_ARDUINO)
+            if(typeOA == optimAero::optimAero_TYPE_ARDUINO || typeOA == optimAero::optimAero_TYPE_MULTI)
             {
 
                 #if 0
@@ -247,7 +281,7 @@ void Optim::update_slow_hz(void){
                 #endif
 
 
-                if(first_sent_sim_buffer == 0 && now > 15000){
+                if(first_sent_sim_buffer == 0 && now > 9000){//15000
                     first_sent_sim_buffer   = now;
                     sendSim_serial          = true;
                     printf("sending oa data now == %d\n",now);
@@ -318,14 +352,16 @@ void Optim::populateBufferOut(){
         battery_data.messageID      = ID_MESSAGE_BATT_CELL;
         battery_data.messageSize    = sizeof( MsgBattCell_ref);
         battery_data.count          = buffer_counter++;
-        for(int i=0;i<NUMCELL*NUMBATT;i++){
+        /*for(int i=0;i<NUMCELL*NUMBATT;i++){
             battery_data.cell[i]    = 3300;
-        }    
-        battery_data.cell[0]        = 3300 + increment_arm_disconnect_;
+        } */   
+        
+        //battery_data.cell[0]        = 3300 + increment_arm_disconnect_;
         battery_data.align          = 0;
         battery_data.csum = data2send_.fletcher16((uint8_t *)&battery_data, battery_data.messageSize-OPTIM_MESSAGE_CSUM_SIZE);
         //now batery data populated..put into datalinkbuffer
         write2Buffer((uint8_t *)&battery_data, battery_data.messageSize);
+        printf("sent battery\n");
 
         /*analog data*/
         increment_arm_disconnect_++;

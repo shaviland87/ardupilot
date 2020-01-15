@@ -300,6 +300,53 @@ float optimAero::get_batt_voltage(uint8_t instance) const {
 
 }
 
+float optimAero::get_batt_voltage(uint8_t instance, uint8_t battNum) const {
+
+	if( instance > num_instances){
+		return 0.0f;
+	}else{
+		
+		float tmp = 0.0;
+		int start = 0;
+		int end = 0;
+
+		switch (battNum)
+		{ // idea to get index of what batteries we care to use to measure total voltage of
+		case 0:
+			start 	= 0;
+			end 	= 7;
+			break;
+		case 1:
+			start 	= 8;
+			end 	= 15;
+			break;
+		case 2:
+			start 	= 16;
+			end 	= 23;
+			break;
+		case 3:
+			start 	= 24;
+			end 	= 29;
+			break;
+		case 4:
+			start 	= 32;
+			end 	= 40;
+			break;
+			
+		default:
+			start 	= 0;
+			end 	= 7;
+			break;
+		}
+		for(int i=start; i<=end; i++){
+			tmp += state[instance].batt_cells.cells[i]/1000.0f; //in millivolts --convert to v
+		}
+
+		return tmp;
+	}
+
+}
+
 void optimAero::sendBuffer(OA_Parser &parser_in){
 
 

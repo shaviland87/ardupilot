@@ -103,7 +103,8 @@ void AP_OA_Multi_Repeater::update10Hz(void){
 	motor_out_.messageSize 	= sizeof(external_ap_rc_out_ref);
 
     //arduino related code....
-	if(params.function | MASK_ARDUINO_ARMS){
+	
+    if(params.function | MASK_ARDUINO_ARMS){
 
 		if(updateAnalogHealth()){
 			checkArmConnects(); 	//only worth checking if data is healthy...
@@ -123,7 +124,12 @@ void AP_OA_Multi_Repeater::updateSlow(void){
 	}
 
 	if(missed_hearts_ > MISSED_HEARTS_LIMIT){
-		gcs().send_text(MAV_SEVERITY_WARNING,"EXT RC DOWN");
+		
+		if(params.function | MASK_IGNORE_EXTRC){
+			//ignore warning
+		}else{
+			gcs().send_text(MAV_SEVERITY_WARNING,"EXT RC DOWN");
+		}
 	}
 
 ///////////////////////////////////////////////////////////////////
@@ -135,19 +141,29 @@ void AP_OA_Multi_Repeater::updateSlow(void){
 			checkTemperatures(); //only worth checking if data is health
 
 			if( true == max_temperature_reached_){
-				gcs().send_text(MAV_SEVERITY_WARNING,"MAX TEMP REACHED");
+
+				if(params.function | MASK_ARDUINO_IGNORETEMP){
+					//ignore warning
+				}else{
+					gcs().send_text(MAV_SEVERITY_WARNING,"MAX TEMP REACHED");
+				}
 			}
 		}
 	}
 
 	if(params.function | MASK_ARDUINO_BATT){
+		//hal.uartD->printf("update batt\n");
 		updateBatteryHealth(); //determines health -> also will bitch about no data hopefully
 	}
 
 	if(params.function | MASK_ARDUINO_ARMS){
 		if(true == arm_disconnected_ ){
 			//alert GCS about arm disconnect
-			gcs().send_text(MAV_SEVERITY_WARNING, "ARM DISCONNECTED");
+			if(params.function | MASK_ARDUINO_IGNOREARM){
+				//ignore warning
+			}else{
+				gcs().send_text(MAV_SEVERITY_WARNING, "ARM DISCONNECTED");
+			}
 		}
 	}
 //////////////////////////////////////////////////////////////////////////////////    
@@ -253,13 +269,13 @@ void AP_OA_Multi_Repeater::checkForData(void){
 								case ID_MESSAGE_BATT_CELL:
 									memcpy(&battery_in_, parse_params_.bf, sizeof(MsgBattCell_ref));
 									battery_updated_ = true;
-									hal.uartD->printf("batt recv\n");
+									//hal.uartD->printf("batt recv\n");
 									break;
 								case ID_MESSAGE_BATT_CELL_SPLIT:
 									memcpy(&battery_split_in_, parse_params_.bf, sizeof(MsgBattCellSplit_ref));
 									battery_updated_ = true;
 									battery_split_updated_ = true;
-									hal.uartD->printf("batt split recv\n");
+									//hal.uartD->printf("batt split recv\n");
 									break;
 								case ID_MESSAGE_ANALOG_DATA:
 									memcpy(&analog_in_,parse_params_.bf,sizeof(MsgAnalogData_ref));
@@ -274,7 +290,7 @@ void AP_OA_Multi_Repeater::checkForData(void){
 								default:{
 									parse_params_.unknownReadID++;
 									state.badIDs = parse_params_.unknownReadID;
-									hal.uartD->printf("bad read id\n");
+									//hal.uartD->printf("bad read id\n");
 								}break;
 							}
 
@@ -285,7 +301,7 @@ void AP_OA_Multi_Repeater::checkForData(void){
 							parse_params_.badChecksums++;
 							state.badChecksums = parse_params_.badChecksums;
 							//bad checksum!!
-							hal.uartD->printf("bad ck\n");
+							//hal.uartD->printf("bad ck\n");
 
 						}
 						
@@ -379,7 +395,7 @@ bool AP_OA_Multi_Repeater::updateBatteryHealth(void){
 		}else{
 			for(int j=0; j<NUMBATT*NUMCELL; j++){
 				state.batt_cells.cells[j] = battery_in_.cell[j];
-				hal.uartD->printf("cell %d = %d \n",j, battery_in_.cell[j]);
+				//hal.uartD->printf("cell %d = %d \n",j, battery_in_.cell[j]);
 			}
 		}
 
