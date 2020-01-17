@@ -56,11 +56,12 @@ void ModeStabilize::run()
 
 #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
     #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+    // want to log constantly at 10 hz...in chirp status log instead at 400hz
                             
     float pilot_throttle_scaled = get_pilot_desired_throttle();
 
     if(g2.user_parameters.get_chirpEnabled() &&
-        g2.user_parameters.get_chirpAxes() <= 7 )
+        g2.user_parameters.get_chirpAxes() <= 10 )
         {
             //chirp enabled and chirp axes is throttle channel
             if(g2.rc_channels.rc_channel(4)->get_radio_in() > 1400 && 
@@ -99,27 +100,74 @@ void ModeStabilize::run()
                         switch( g2.user_parameters.get_chirpAxes() )
                         {
                             case 0:
+                            //roll angle
+                            copter.m_input          = target_roll;
+                            target_roll             = target_roll + copter.m_value;
+                            copter.m_output         = attitude_control->get_att_target_euler_cd().x;
                             break;
 
                             case 1:
+                            //pitch angle
+                            copter.m_input          = target_pitch;
+                            target_pitch            = target_pitch + copter.m_value;
+                            copter.m_output         = attitude_control->get_att_target_euler_cd().y;
                             break;
                             
                             case 2:
+                            //yaw rate
+                            copter.m_input          = target_yaw_rate;
+                            target_yaw_rate         = target_yaw_rate + copter.m_value;   
+                            copter.m_output         = wrap_360_cd(attitude_control->get_att_target_euler_cd().z);
                             break;
                             
                             case 3:
                             //throttle
-                            copter.m_input              = pilot_throttle_scaled; 
-                            pilot_throttle_scaled       = pilot_throttle_scaled + copter.m_value;
+                            copter.m_input          = pilot_throttle_scaled; 
+                            pilot_throttle_scaled   = pilot_throttle_scaled + copter.m_value;
+                            copter.m_output         = copter.ins.get_accel(0).z;
                             break;
                             
-                            case 4:
+                            case 4: //roll mixer input
+                            copter.m_input          = motors->get_roll();
+                            attitude_control->actuator_roll_sysid(copter.m_value);
+                            copter.m_output         = ahrs.get_gyro().x;    //copter.ins.get_gyro(0).x;
+                            break;
+
+                            case 5: //pitch mixer input
+                            copter.m_input          = motors->get_pitch();
+                            attitude_control->actuator_pitch_sysid(copter.m_value);
+                            copter.m_output         = ahrs.get_gyro().y;
+                            break;
+
+                            case 6: //yaw mixer input
+                            copter.m_input          = motors->get_yaw();
+                            attitude_control->actuator_yaw_sysid(copter.m_value);
+                            copter.m_output         = ahrs.get_gyro().z;
                             break;
                             
                             case 7:
                             //throttle
-                            copter.m_input              = pilot_throttle_scaled; 
-                            pilot_throttle_scaled       = pilot_throttle_scaled + copter.m_value;
+                            copter.m_input          = motors->get_throttle();
+                            pilot_throttle_scaled   = pilot_throttle_scaled + copter.m_value;
+                            copter.m_output         = copter.ins.get_accel(0).z;
+                            break;
+
+                            case 8: 
+                            copter.m_input          = attitude_control->rate_bf_targets().x;
+                            attitude_control->rate_bf_roll_sysid(radians(copter.m_value));
+                            copter.m_output         = ahrs.get_gyro().x;
+                            break;
+
+                            case 9:
+                            copter.m_input          = attitude_control->rate_bf_targets().y;
+                            attitude_control->rate_bf_pitch_sysid(radians(copter.m_value));
+                            copter.m_output         = ahrs.get_gyro().y;
+                            break;
+
+                            case 10:
+                            copter.m_input          = attitude_control->rate_bf_targets().z;
+                            attitude_control->rate_bf_yaw_sysid(radians(copter.m_value));
+                            copter.m_output         = ahrs.get_gyro().z;
                             break;
                             
                             default:
@@ -142,10 +190,26 @@ void ModeStabilize::run()
                 copter.chirp_ready = true;
                 copter.m_input = 0.0f;
                 copter.disturbance_injection = 0.0f;
+                copter.m_output = 0.0f;
+                copter.m_value  = 0.0f;
             }
 
         //end of chirp enabled and axes set correctly
         }
+
+        //outside of chirp code..want to log minimally at 10hz and when in chirp log at 400hz
+        if(copter.chirp_ready && copter.chirp_init && !copter.chirp_setting_done){
+            //chirp is ready and initalized and the chirp has not been completed yet ...log at 400
+            log_data();
+            counter_++;
+        }else{
+            // we aren't doing chirp..log at 10hz
+            counter_++;
+            if( (counter_ % 40) == 0 ){
+                log_data(); //we are going to log at lower data rate when not doing a chirp
+            }
+        }
+    
 
 
     #endif
@@ -185,5 +249,24 @@ void ModeStabilize::run()
                                        g.throttle_filt);
 
 #endif
+
+}
+
+/*
+log needs to contain axes, input,output
+possible to do mimo eventually
+*/
+
+void ModeStabilize::log_data(){
+
+    //want to record preInjected signal, the signal itself, and output signal
+    /* preInject -> copter.m_input                  */
+    /* signal -> copter.m_value -> chirp itself     */
+    /* output -> copter.m_output -> output channel  */
+    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+        #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+            copter.Log_Write_Chirp_Short(g2.user_parameters.get_chirpAxes(), copter.m_input,  copter.m_value , copter.m_output);
+        #endif
+    #endif
 
 }

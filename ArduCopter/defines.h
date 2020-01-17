@@ -151,6 +151,7 @@ enum LoggingParameters {
      LOG_SYSIDD_MSG,
      LOG_SYSIDS_MSG,
      LOG_CHIRP_FULL,
+     LOG_CHIRP_SHORT,
 };
 
 #define MASK_LOG_ATTITUDE_FAST          (1<<0)

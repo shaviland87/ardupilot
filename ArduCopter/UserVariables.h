@@ -27,6 +27,7 @@
     float m_dt;
     float m_amplitude; 
     float m_input;                  // input value - chirp useage but not committed out as its used in log
+    float m_output;                 // output signal for logging purposes
 
     // Time-varying values.
     float m_phaseInGain;            

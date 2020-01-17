@@ -11,8 +11,8 @@
 #define MISSED_HEARTS_LIMIT 3
 #define CHECK_HEART_RATE_HZ 1 
 #define WARN_BATT_COUNT 5
-#define WARN_TEMP_COUNT 5
-#define WARN_ANAL_COUNT 5
+#define WARN_TEMP_COUNT 15
+#define WARN_ANAL_COUNT 15
 
 class AP_OA_Multi_Repeater : public AP_OA_Backend
 {

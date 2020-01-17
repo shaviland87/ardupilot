@@ -12,6 +12,7 @@
     void update_optimaero_Slow(void);
     void update_optimaero_400Hz(void);
 
+    void Log_Write_Chirp_Short(int8_t axes, float preInject, float input, float output);
 
 
 #if OPTIMAERO_CHIRP_ENABLED == ENABLED

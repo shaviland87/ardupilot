@@ -1192,6 +1192,8 @@ protected:
     const char *name4() const override { return "STAB"; }
 
 private:
+    void log_data();
+    unsigned char counter_;
 
 };
 

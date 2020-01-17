@@ -388,6 +388,30 @@ void Copter::Log_Write_SysID_Setup(uint8_t systemID_axis, float waveform_magnitu
         logger.WriteBlock(&pkt_chirp, sizeof(pkt_chirp));
     }
 
+    struct PACKED log_OPTIM_CHIRPSHORT {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    int8_t  systemID_axis;
+    float preInject_signal;
+    float input;
+    float output;
+    };
+
+    void Copter::Log_Write_Chirp_Short(int8_t axes, float preInject, float sys_id_input, float sys_id_output){
+
+        struct log_OPTIM_CHIRPSHORT pkt_sids = {
+        LOG_PACKET_HEADER_INIT(LOG_CHIRP_SHORT),
+        time_us             : AP_HAL::micros64(),
+        systemID_axis       : axes,
+        preInject_signal    : preInject,
+        input               : sys_id_input,
+        output              : sys_id_output
+        };
+        
+        logger.WriteBlock(&pkt_sids, sizeof(pkt_sids));
+
+    }
+
     #endif
 #endif
 
@@ -540,6 +564,7 @@ const struct LogStructure Copter::log_structure[] = {
     #if OPTIMAERO_CHIRP_ENABLED == ENABLED
 //        { LOG_CHIRP_FULL, sizeof(log_OPTIM_CHIRPFULL),"CHRP","Qffffffffffffff","Time,pI,rlC,rlA,ptC,ptA,ywC,ywA,rlO,ptO,ywO,thrO,gx,gy,gz","s--------------","F00000000000000"},
           { LOG_CHIRP_FULL, sizeof(log_OPTIM_CHIRPFULL),"CHRP","Qff","Time,pI,thrO","s--","F00"},
+          { LOG_CHIRP_SHORT, sizeof(log_OPTIM_CHIRPSHORT),"CHP", "Qbfff","Time,axes,pI,in,out","s----","F0000"}
 
     #endif
 #endif

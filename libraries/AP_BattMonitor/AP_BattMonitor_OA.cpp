@@ -102,7 +102,7 @@ AP_BattMonitor_OA::read()
                 _state.voltage                = oa_->get_batt_voltage(i,1);
                 _state.last_time_micros       = AP_HAL::micros();
                 _state.current_amps           = 0;
-                _state.healthy                = 1;                    
+                _state.healthy                = 1;                  
                 }break;
                 
                 case 2:{
@@ -121,7 +121,7 @@ AP_BattMonitor_OA::read()
                 _state.voltage                = oa_->get_batt_voltage(i,2);
                 _state.last_time_micros       = AP_HAL::micros();    
                 _state.current_amps           = 0;
-                _state.healthy                = 1;                                
+                _state.healthy                = 1;                               
                 }
                 break;
                 case 3:{
@@ -140,7 +140,7 @@ AP_BattMonitor_OA::read()
                 _state.voltage                = oa_->get_batt_voltage(i,3);
                 _state.last_time_micros       = AP_HAL::micros();    
                 _state.current_amps           = 0;
-                _state.healthy                = 1;                            
+                _state.healthy                = 1;                        
                 }break;
                 
                 case 4:{
@@ -158,7 +158,7 @@ AP_BattMonitor_OA::read()
                 _state.voltage                = oa_->get_batt_voltage(i,4);
                 _state.last_time_micros       = AP_HAL::micros();    
                 _state.current_amps           = 0;
-                _state.healthy                = 1;                            
+                _state.healthy                = 1;                        
                 }break;
                 
                 default:
