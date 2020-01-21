@@ -244,6 +244,10 @@ void Copter::fast_loop()
     // run low level rate controllers that only require IMU data
     attitude_control->rate_controller_run();
 
+    #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+        update_400hz_chirp();
+    #endif
+
     // send outputs to the motors library immediately
     motors_output();
 
