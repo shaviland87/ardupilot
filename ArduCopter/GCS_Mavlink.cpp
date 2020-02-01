@@ -1329,3 +1329,31 @@ MAV_LANDED_STATE GCS_MAVLINK_Copter::landed_state() const
     }
     return MAV_LANDED_STATE_IN_AIR;
 }
+
+void GCS_MAVLINK_Copter::send_optimaero(void){
+    //printf("send oa gcs\n");
+    const optimAero *oa_ = AP::oa();
+    if(nullptr != oa_)
+    {
+        
+        if(oa_->get_type() == optimAero::optimAero_TYPE_MULTI){
+
+            //oa_->get_batt_voltage(0)
+            mavlink_msg_simstate_send(chan,
+                                    oa_->get_batt_voltage(0), //total voltage of battery cells
+                                    oa_->get_temperature_value(0,0),
+                                    oa_->get_temperature_value(0,1),
+                                    oa_->get_temperature_value(0,2),
+                                    oa_->get_temperature_value(0,3),
+                                    (float)oa_->get_analog_value(0,0),
+                                    (float)oa_->get_analog_value(0,1),
+                                    (float)oa_->get_analog_value(0,2),
+                                    (float)oa_->get_analog_value(0,3),
+                                    oa_->get_analog_value(0,4),
+                                    oa_->get_analog_value(0,5)
+                                    );
+
+        }
+
+    }
+}

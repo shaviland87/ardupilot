@@ -209,6 +209,10 @@ const AP_Param::GroupInfo SITL::var_info2[] = {
     // minimum throttle for simulated ins noise
     AP_GROUPINFO("INS_THR_MIN", 62, SITL,  ins_noise_throttle_min, 0.1f),
 
+
+    //optimaero
+    AP_GROUPINFO("OA_ON", 63, SITL,  oa_ext_on_, 23),
+
     AP_GROUPEND
 
 };
@@ -217,6 +221,8 @@ const AP_Param::GroupInfo SITL::var_info2[] = {
 /* report SITL state via MAVLink */
 void SITL::simstate_send(mavlink_channel_t chan)
 {
+    #if 0 
+    //for OA dev -> comment out
     float yaw;
 
     // convert to same conventions as DCM
@@ -237,6 +243,7 @@ void SITL::simstate_send(mavlink_channel_t chan)
                               radians(state.yawRate),
                               state.latitude*1.0e7,
                               state.longitude*1.0e7);
+    #endif
 }
 
 /* report SITL state to AP_Logger */

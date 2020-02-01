@@ -23,7 +23,17 @@
 #define MASK_ARDUINO_ARM4           (1<<3)
 #define MASK_ARDUINO_ARM5           (1<<4)
 #define MASK_ARDUINO_ARM6           (1<<5)
-
+/*
+batt=1 1<<0 = 1
+arms=2 1<<1 = 2
+temp=4 1<<2 = 4
+anal=8 1<<3 = 8
+rc =16 1<<4 = 16
+1<<5 32
+1<<6 64
+1<<7 128
+1<<8 256
+*/
 
 #define OPTIM_MESSAGE_SYNC              0xa1
 #define OPTIM_MESSAGE_CSUM_SIZE         2

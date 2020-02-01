@@ -6,9 +6,10 @@
 #include "OA_MessageTypes.h"
 #include <AP_Motors/AP_Motors.h>
 #include <GCS_MAVLink/GCS_MAVLink.h> 	// to be able to send data to GCS
+#include <GCS_MAVLink/GCS.h>
 
-#define HRT_RATE_HZ 1
-#define MISSED_HEARTS_LIMIT 3
+#define HRT_RATE_HZ 3
+#define MISSED_HEARTS_LIMIT 1
 #define CHECK_HEART_RATE_HZ 1 
 #define WARN_BATT_COUNT 5
 #define WARN_TEMP_COUNT 15

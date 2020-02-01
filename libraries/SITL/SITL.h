@@ -345,6 +345,11 @@ public:
     } led;
 
     EFI_MegaSquirt efi_ms;
+
+
+
+    AP_Int8 oa_ext_on_;
+
 };
 
 } // namespace SITL

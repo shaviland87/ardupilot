@@ -43,6 +43,8 @@ protected:
     virtual MAV_LANDED_STATE landed_state() const override;
 
     bool allow_disarm() const override;
+    void send_optimaero() override;
+
 
 private:
 
@@ -63,5 +65,4 @@ private:
     float vfr_hud_alt() const override;
 
     void send_pid_tuning() override;
-
 };

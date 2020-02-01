@@ -24,6 +24,11 @@
 #include "MissionItemProtocol_Fence.h"
 #include "ap_message.h"
 
+
+
+#include <AP_OA_EXT/optimAero.h>
+
+
 #define GCS_DEBUG_SEND_MESSAGE_TIMINGS 0
 
 // check if a message will fit in the payload space available
@@ -295,6 +300,10 @@ public:
     uint8_t get_stream_slowdown_ms() const { return stream_slowdown_ms; }
 
     MAV_RESULT set_message_interval(uint32_t msg_id, int32_t interval_us);
+
+
+    virtual void send_optimaero()=0;
+
 
 protected:
 

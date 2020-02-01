@@ -95,6 +95,19 @@ private:
     unsigned int increment_arm_disconnect_;
     bool SEND_ARDUINO_;
 
+    /*multi repeater variables*/
+    void update_simulated_MultiRepeater(void);
+    uint32_t last_ms_externalHRT_; //3.3 hz
+    uint32_t last_ms_battery_; // 1hz
+    uint32_t last_ms_temperature_; // 1hz
+    uint32_t last_ms_analog_; // 10 hz
+    bool vary_arm_connects_;
+    void update_simulated_battery(void);
+    void update_simulated_extHrt(void);
+    void update_simulated_analog(void);
+    void update_simulated_temperature(void);
+
+
 
 };
 

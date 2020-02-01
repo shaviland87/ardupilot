@@ -4,6 +4,7 @@
 #include "AP_OA_Multi_Repeater.h"
 #include <GCS_MAVLink/GCS.h> 					/*to send data to GCS */
 
+//#include <stdio.h>
 /*
     // initialise pointers to serial ports
     state[1].uart = hal.uartC;  // serial1, uartC, normally telem1
@@ -104,29 +105,31 @@ void AP_OA_Multi_Repeater::update10Hz(void){
 
     //arduino related code....
 	
-    if(params.function | MASK_ARDUINO_ARMS){
+    if(params.function & MASK_ARDUINO_ARMS){
 
 		if(updateAnalogHealth()){
 			checkArmConnects(); 	//only worth checking if data is healthy...
 		}
 	}
 
-
 }
 void AP_OA_Multi_Repeater::updateSlow(void){
 
 	updateMotorInterlock();
-
-	if(hrt_beat_rcvd_ < HRT_RATE_HZ*CHECK_HEART_RATE_HZ){
+	/*we check heartbeat rcvd(hrt_beat_rcvd_) 1/sec -> should recv 3.3 of them per sec*/
+	/* if we aren't recv at least 1 per sec we should say seomthing */
+	if(hrt_beat_rcvd_ < (HRT_RATE_HZ*CHECK_HEART_RATE_HZ)-1 ){
 		missed_hearts_++;
+		//printf("mh %u \n",missed_hearts_);
 	}else{
 		missed_hearts_ = 0;
 	}
 
 	if(missed_hearts_ > MISSED_HEARTS_LIMIT){
 		
-		if(params.function | MASK_IGNORE_EXTRC){
+		if(params.function & MASK_IGNORE_EXTRC){
 			//ignore warning
+			//printf("ignore %u \n",missed_hearts_);
 		}else{
 			gcs().send_text(MAV_SEVERITY_WARNING,"EXT RC DOWN");
 		}
@@ -135,14 +138,14 @@ void AP_OA_Multi_Repeater::updateSlow(void){
 ///////////////////////////////////////////////////////////////////
     //arduino related code...........
 	
-	if(params.function | MASK_ARDUINO_TEMPERATURE){
+	if(params.function & MASK_ARDUINO_TEMPERATURE){
 
 		if(updateTemperatureHealth()){
 			checkTemperatures(); //only worth checking if data is health
 
 			if( true == max_temperature_reached_){
 
-				if(params.function | MASK_ARDUINO_IGNORETEMP){
+				if(params.function & MASK_ARDUINO_IGNORETEMP){
 					//ignore warning
 				}else{
 					gcs().send_text(MAV_SEVERITY_WARNING,"MAX TEMP REACHED");
@@ -151,15 +154,15 @@ void AP_OA_Multi_Repeater::updateSlow(void){
 		}
 	}
 
-	if(params.function | MASK_ARDUINO_BATT){
+	if(params.function & MASK_ARDUINO_BATT){
 		//hal.uartD->printf("update batt\n");
 		updateBatteryHealth(); //determines health -> also will bitch about no data hopefully
 	}
 
-	if(params.function | MASK_ARDUINO_ARMS){
+	if(params.function & MASK_ARDUINO_ARMS){
 		if(true == arm_disconnected_ ){
 			//alert GCS about arm disconnect
-			if(params.function | MASK_ARDUINO_IGNOREARM){
+			if(params.function & MASK_ARDUINO_IGNOREARM){
 				//ignore warning
 			}else{
 				gcs().send_text(MAV_SEVERITY_WARNING, "ARM DISCONNECTED");
@@ -168,8 +171,8 @@ void AP_OA_Multi_Repeater::updateSlow(void){
 	}
 //////////////////////////////////////////////////////////////////////////////////    
 
-
-
+/*set heartbeats rcv badk to zero*/
+hrt_beat_rcvd_ = 0;
 
 }
 void AP_OA_Multi_Repeater::populateBuffer(OA_Parser &parser_in){
@@ -346,7 +349,6 @@ void AP_OA_Multi_Repeater::checkTemperatures(void){
 		if(thermisters_in.tempF[i] > MAX_TEMPERATURE_THERMISTER){
 			max_temperature_reached_ = true;
 			//an also use _INFO/_NOTICE
-			// gcs().send_text(MAV_SEVERITY_WARNING, "Battery %d is %s %.2fV used %.0f mAh", i + 1, type_str,(double)voltage(i), (double)state[i].consumed_mah);
 		}
 	}
 
@@ -474,7 +476,7 @@ bool AP_OA_Multi_Repeater::updateTemperatureHealth(void){
 		if(true == send_temperature_health_warning_){
 			send_temperature_health_warning_ = false;
 			// send something to ground saying temp data back
-			// TBD
+			gcs().send_text(MAV_SEVERITY_NOTICE, "Regained Comms with oaTemp");
 		}
 
 	}else{
@@ -485,7 +487,7 @@ bool AP_OA_Multi_Repeater::updateTemperatureHealth(void){
 	if(temp_health_cntr_ > WARN_TEMP_COUNT && send_temperature_health_warning_ == false){
 		send_temperature_health_warning_ = true;
 		// send something to ground saying temp data gone
-		// TBD
+		gcs().send_text(MAV_SEVERITY_WARNING, "Lost Comms with oaTemp");
 	}
 
 	return isTemperatureHealthy;

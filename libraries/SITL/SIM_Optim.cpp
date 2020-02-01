@@ -54,15 +54,20 @@ Optim::Optim(const char *frame_str) :
     sendSim_serial          = false;
     buffer_counter          = 0;
     first_sent_sim_buffer   = 0; //a value to track our first sent buffer to simulated ardu
+    vary_arm_connects_      = false;
+    last_ms_temperature_    = 0;
+    last_ms_analog_         = 0;
+    last_ms_battery_        = 0;
+    last_ms_externalHRT_    = 0;
 
-    int8_t gerp = MASK_ARDUINO_BATT | MASK_ARDUINO_ARMS | MASK_ARDUINO_TEMPERATURE ; // 7
+    int8_t gerp = MASK_ARDUINO_BATT | MASK_ARDUINO_ARMS | MASK_ARDUINO_TEMPERATURE | MASK_EXT_RC ; // 7 == MASK_ARDUINO_BATT | MASK_ARDUINO_ARMS | MASK_ARDUINO_TEMPERATURE
     printf("gerp is %d \n",gerp);
     gerp = MASK_ARDUINO_BATT | MASK_ARDUINO_ARMS  ; // 3 
-    //printf("gerp is %d \n",gerp);
+    printf("gerp is %d \n",gerp);
     gerp = MASK_ARDUINO_BATT   ; // 1
-    //printf("gerp is %d \n",gerp);
+    printf("gerp is %d \n",gerp);
     gerp =  MASK_ARDUINO_ARMS  ; // 2
-    //printf("gerp is %d\n",gerp);
+    printf("gerp is %d\n",gerp);
 
     send_once                   = true;
     increment_arm_disconnect_   = 0;
@@ -70,36 +75,42 @@ Optim::Optim(const char *frame_str) :
     hrt_cntr_                   = 0;
 
     battery_data.cell[0]    = 3300;
-    battery_data.cell[1]    = 1300;
-    battery_data.cell[2]    = 2300;
+    battery_data.cell[1]    = 3300;
+    battery_data.cell[2]    = 3300;
     battery_data.cell[3]    = 3300;
     battery_data.cell[4]    = 3300;
     battery_data.cell[5]    = 3300;
-    battery_data.cell[6]    = 3300;
-    battery_data.cell[7]    = 3300;
-    battery_data.cell[8]    = 3300;
-    battery_data.cell[9]    = 3300;
+    battery_data.cell[6]    = 0;
+    battery_data.cell[7]    = 0;
+    battery_data.cell[8]    = 0;
+    battery_data.cell[9]    = 0;
 
-    battery_data.cell[10]    = 300;
-    battery_data.cell[11]    = 3300;
-    battery_data.cell[12]    = 3300;
-    battery_data.cell[13]    = 3300;
-    battery_data.cell[14]    = 3300;
-    battery_data.cell[15]    = 3300;
-    battery_data.cell[16]    = 3300;
-    battery_data.cell[17]    = 3300;
-    battery_data.cell[18]    = 3300;
-    battery_data.cell[19]    = 3300;
+    battery_data.cell[10]    = 0;
+    battery_data.cell[11]    = 0;
+    battery_data.cell[12]    = 0;
+    battery_data.cell[13]    = 0;
+    battery_data.cell[14]    = 0;
+    battery_data.cell[15]    = 0;
+    battery_data.cell[16]    = 0;
+    battery_data.cell[17]    = 0;
+    battery_data.cell[18]    = 0;
+    battery_data.cell[19]    = 0;
 
-    battery_data.cell[20]    = 800;
-    battery_data.cell[21]    = 3300;
-    battery_data.cell[22]    = 3300;
-    battery_data.cell[23]    = 3300;
-    battery_data.cell[24]    = 3300;
-    battery_data.cell[25]    = 3300;
-    battery_data.cell[26]    = 3300;
-    battery_data.cell[27]    = 3300;
-    battery_data.cell[28]    = 3300;
+    battery_data.cell[20]    = 0;
+    battery_data.cell[21]    = 0;
+    battery_data.cell[22]    = 0;
+    battery_data.cell[23]    = 0;
+    battery_data.cell[24]    = 0;
+    battery_data.cell[25]    = 0;
+    battery_data.cell[26]    = 0;
+    battery_data.cell[27]    = 0;
+    battery_data.cell[28]    = 0;
+
+
+    thermister_data.tempF[0] = 69.9;
+    thermister_data.tempF[1] = 44.4;
+    thermister_data.tempF[2] = 22.2;
+    thermister_data.tempF[3] = 44.69;
 
 
 }
@@ -241,7 +252,8 @@ void Optim::update(const struct sitl_input &input)
     // update magnetic field
     update_mag_field_bf();
     drain_sockets();
-    update_slow_hz();
+    //update_slow_hz(); //old version of code
+    update_simulated_MultiRepeater();
 }
 
 void Optim::update_slow_hz(void){
@@ -303,7 +315,7 @@ void Optim::update_slow_hz(void){
                 }
 
 
-            }else if(typeOA == optimAero::optimAero_TYPE_EXTRC)
+            }else if(typeOA == optimAero::optimAero_TYPE_EXTRC || typeOA == optimAero::optimAero_TYPE_MULTI)
             {
                 if(!SEND_ARDUINO_)
                 {   
@@ -320,6 +332,69 @@ void Optim::update_slow_hz(void){
 
     }
 
+}
+
+void Optim::update_simulated_MultiRepeater(){
+
+    const uint32_t now = AP_HAL::millis();
+    #if defined(__CYGWIN__) || defined(__CYGWIN64__)
+        if (now < 10000) {
+            // don't send lidar reports until 10s after startup. This
+            // avoids a windows threading issue with non-blocking sockets
+            // and the initial wait on uartA
+            return;
+        }
+    #endif
+
+    optimAero *oa_ = AP::oa();
+
+    for(uint8_t i = 0; i< oa_->num_oa_connections(); i++)
+    {
+        typeOA = oa_->get_type(i);
+        if(typeOA == optimAero::optimAero_TYPE_MULTI)
+        {
+            if( now > 9000)
+            { // THIS IS TO PREVENT sim issues want the repeater to start sending after main-bro boots
+
+                if (now - last_ms_externalHRT_ >= (303/1) ) // 3.3hz
+                { // SEND HEARTBEAT
+                    last_ms_externalHRT_ = now;
+                    if (AP::sitl() && (AP::sitl()->oa_ext_on_ & MASK_EXT_RC) ){
+                        update_simulated_extHrt();
+                        oa_->sendBuffer(data2send_);
+                    }else{
+                        //printf("no hrt\n");
+                    }
+                }
+
+                if(now - last_ms_analog_ >= (100/1)){ // 10hz
+                    //send analog data
+                    last_ms_analog_ = now;
+                    if (AP::sitl() && (AP::sitl()->oa_ext_on_ & MASK_ARDUINO_ARMS) ){
+                        update_simulated_analog();
+                        oa_->sendBuffer(data2send_);
+                    }
+                }
+
+                if(now - last_ms_battery_ >= (1000/1)){ // 1 hz
+                    //send battery
+                    last_ms_battery_ = now;
+                    if (AP::sitl() && (AP::sitl()->oa_ext_on_ & MASK_ARDUINO_BATT) ){
+                        update_simulated_battery();
+                        oa_->sendBuffer(data2send_);
+                    }
+                }
+
+                if(now -last_ms_temperature_ >= (110/1)){
+                    last_ms_temperature_ = now;
+                    if (AP::sitl() && (AP::sitl()->oa_ext_on_ & MASK_ARDUINO_TEMPERATURE) ){
+                        update_simulated_temperature();
+                        oa_->sendBuffer(data2send_);
+                    }
+                }
+            }
+        }
+    }
 }
 void Optim:: write2Buffer(uint8_t* ptr, uint32_t len){
 
@@ -351,12 +426,11 @@ void Optim::populateBufferOut(){
         battery_data.sync           = OPTIM_MESSAGE_SYNC;
         battery_data.messageID      = ID_MESSAGE_BATT_CELL;
         battery_data.messageSize    = sizeof( MsgBattCell_ref);
-        battery_data.count          = buffer_counter++;
+        battery_data.count++;
         /*for(int i=0;i<NUMCELL*NUMBATT;i++){
             battery_data.cell[i]    = 3300;
         } */   
         
-        //battery_data.cell[0]        = 3300 + increment_arm_disconnect_;
         battery_data.align          = 0;
         battery_data.csum = data2send_.fletcher16((uint8_t *)&battery_data, battery_data.messageSize-OPTIM_MESSAGE_CSUM_SIZE);
         //now batery data populated..put into datalinkbuffer
@@ -407,6 +481,100 @@ void Optim::populateBufferOut(){
   
     
     
+}
+
+
+void Optim::update_simulated_battery(void){
+
+    /*battery data*/
+    battery_data.sync           = OPTIM_MESSAGE_SYNC;
+    battery_data.messageID      = ID_MESSAGE_BATT_CELL;
+    battery_data.messageSize    = sizeof( MsgBattCell_ref);
+    battery_data.count++;
+    
+    /*for(int i=0;i<NUMCELL*NUMBATT;i++){
+        battery_data.cell[i]    = 3300;
+    } */   
+    
+    //battery_data.cell[0]        = 3300 + increment_arm_disconnect_;
+    battery_data.align          = 0;
+    battery_data.csum = data2send_.fletcher16((uint8_t *)&battery_data, battery_data.messageSize-OPTIM_MESSAGE_CSUM_SIZE);
+    //now batery data populated..put into datalinkbuffer
+    write2Buffer((uint8_t *)&battery_data, battery_data.messageSize);
+    //printf("sent battery\n");
+
+}
+
+void Optim::update_simulated_extHrt(void){
+
+    external_hrt_beat_.sync         = OPTIM_MESSAGE_SYNC;
+    external_hrt_beat_.messageID    = ID_REPEATER_HEARTBEAT;
+    external_hrt_beat_.messageSize  = sizeof(rc_repeater_heartbeat_ref);
+    external_hrt_beat_.count++;
+    external_hrt_beat_.armStatus    = 0;
+    external_hrt_beat_.badChecksum  = 0;
+    external_hrt_beat_.missedAP     = 0;
+    external_hrt_beat_.csum         = data2send_.fletcher16((uint8_t *)&external_hrt_beat_, external_hrt_beat_.messageSize-OPTIM_MESSAGE_CSUM_SIZE);
+    write2Buffer((uint8_t *)&external_hrt_beat_,external_hrt_beat_.messageSize);
+
+    //printf("sent hrt\n");
+
+}
+
+void Optim::update_simulated_analog(void){
+
+    /*analog data*/
+    increment_arm_disconnect_++;
+
+    analog_data.sync            = OPTIM_MESSAGE_SYNC;
+    analog_data.messageID       = ID_MESSAGE_ANALOG_DATA;
+    analog_data.messageSize     = sizeof(MsgAnalogData_ref);
+    analog_data.count++;
+
+    if(vary_arm_connects_){
+
+        if(increment_arm_disconnect_ > 100){
+
+            for(int i=0; i<MAX_ANALOG_CAPACITY;i++){
+                analog_data.data[i]     = ARDUINO_ARM_CONNECTED;
+            }
+            analog_data.data[2]         = ARDUINO_ARM_DISCONNECTED;
+            if(increment_arm_disconnect_ > 200){
+                increment_arm_disconnect_   = 0;
+                printf("arm disconnect\n");
+            }
+
+        }else{
+
+            for(int i=0; i<MAX_ANALOG_CAPACITY;i++){
+                analog_data.data[i]     = ARDUINO_ARM_CONNECTED;
+            }
+        }
+    }else{
+
+        for(int i=0; i<MAX_ANALOG_CAPACITY;i++){
+            analog_data.data[i]     = ARDUINO_ARM_CONNECTED;
+        }
+
+    }
+
+
+    analog_data.csum = data2send_.fletcher16((uint8_t *)&analog_data, analog_data.messageSize-OPTIM_MESSAGE_CSUM_SIZE);
+    write2Buffer((uint8_t *)&analog_data, analog_data.messageSize);
+    //printf("sent analog\n");
+
+}
+
+void Optim::update_simulated_temperature(void){
+
+    thermister_data.sync            = OPTIM_MESSAGE_SYNC;
+    thermister_data.messageID       = ID_MESSAGE_THERMISTERS_DATA;
+    thermister_data.messageSize     = sizeof(MsgThermistersData_ref);
+    thermister_data.count++;
+    thermister_data.numThermisters  = 4;
+    thermister_data.csum = data2send_.fletcher16((uint8_t *)&thermister_data, thermister_data.messageSize-OPTIM_MESSAGE_CSUM_SIZE);
+    write2Buffer((uint8_t *)&thermister_data, thermister_data.messageSize);
+
 }
 
 }  // namespace SITL

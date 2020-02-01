@@ -3347,11 +3347,36 @@ void GCS_MAVLINK::send_banner()
 void GCS_MAVLINK::send_simstate() const
 {
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
-    SITL::SITL *sitl = AP::sitl();
+    /*SITL::SITL *sitl = AP::sitl();
     if (sitl == nullptr) {
         return;
     }
     sitl->simstate_send(get_chan());
+    
+    const optimAero *oa_ = AP::oa();
+    if(nullptr != oa_)
+    {
+        
+        if(oa_->get_type() == optimAero::optimAero_TYPE_MULTI){
+
+            //oa_->get_batt_voltage(0)
+            mavlink_msg_simstate_send(chan,
+                                    oa_->get_batt_voltage(0), //total voltage of battery cells
+                                    oa_->get_temperature_value(0,0),
+                                    oa_->get_temperature_value(0,1),
+                                    oa_->get_temperature_value(0,2),
+                                    oa_->get_temperature_value(0,3),
+                                    (float)oa_->get_analog_value(0,0),
+                                    (float)oa_->get_analog_value(0,1),
+                                    (float)oa_->get_analog_value(0,2),
+                                    (float)oa_->get_analog_value(0,3),
+                                    oa_->get_analog_value(0,4),
+                                    oa_->get_analog_value(0,5)
+                                    );
+
+        }
+
+    }*/
 #endif
 }
 
@@ -4468,7 +4493,8 @@ bool GCS_MAVLINK::try_send_message(const enum ap_message id)
 
     case MSG_SIMSTATE:
         CHECK_PAYLOAD_SIZE(SIMSTATE);
-        send_simstate();
+        //send_simstate();
+        send_optimaero();
         break;
 
     case MSG_SYS_STATUS:

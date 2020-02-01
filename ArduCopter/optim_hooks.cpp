@@ -23,7 +23,7 @@
     void Copter::update_optimaero_Slow(void){
 
         g2.oa_module.updateSlow();
-        
+                
     }
 
     void Copter::update_optimaero_400Hz(void){
