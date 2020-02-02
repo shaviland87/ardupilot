@@ -364,7 +364,7 @@ void AP_OA_Multi_Repeater::checkArmConnects(void){
 	
 	arm_disconnected_ = false;
 
-	for(int i=0; i<MAX_ANALOG_CAPACITY;i++){
+	for(int i=0; i<6;i++){
 
 		//grab new data
 		arm_connects[i] = analog_in_.data[i];

@@ -1340,17 +1340,17 @@ void GCS_MAVLINK_Copter::send_optimaero(void){
 
             //oa_->get_batt_voltage(0)
             mavlink_msg_simstate_send(chan,
-                                    oa_->get_batt_voltage(0), //total voltage of battery cells
-                                    oa_->get_temperature_value(0,0),
-                                    oa_->get_temperature_value(0,1),
-                                    oa_->get_temperature_value(0,2),
-                                    oa_->get_temperature_value(0,3),
-                                    (float)oa_->get_analog_value(0,0),
-                                    (float)oa_->get_analog_value(0,1),
-                                    (float)oa_->get_analog_value(0,2),
-                                    (float)oa_->get_analog_value(0,3),
-                                    oa_->get_analog_value(0,4),
-                                    oa_->get_analog_value(0,5)
+                                    oa_->get_batt_voltage(0), //total voltage of battery cells === roll
+                                    oa_->get_temperature_value(0,0), /// -- pitch
+                                    oa_->get_temperature_value(0,1), /// -- yaw
+                                    oa_->get_temperature_value(0,2), /// --xacc
+                                    oa_->get_temperature_value(0,3), /// --yacc
+                                    (float)oa_->get_analog_value(0,0), /// -zacc
+                                    (float)oa_->get_analog_value(0,1), /// xgyro
+                                    (float)oa_->get_analog_value(0,2), // ygyro
+                                    (float)oa_->get_analog_value(0,3), /// zgyro
+                                    oa_->get_analog_value(0,4), /// lat 
+                                    oa_->get_analog_value(0,5) //lon
                                     );
 
         }
