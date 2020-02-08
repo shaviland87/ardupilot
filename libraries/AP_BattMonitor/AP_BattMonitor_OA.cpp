@@ -74,8 +74,8 @@ AP_BattMonitor_OA::read()
                 _state.cell_voltages.cells[3] = curr_cells.cells[3];
                 _state.cell_voltages.cells[4] = curr_cells.cells[4];
                 _state.cell_voltages.cells[5] = curr_cells.cells[5];
-                _state.cell_voltages.cells[6] = curr_cells.cells[6];
-                _state.cell_voltages.cells[7] = curr_cells.cells[7];
+                _state.cell_voltages.cells[6] = 0;
+                _state.cell_voltages.cells[7] = 0;
                 _state.cell_voltages.cells[8] = 0;
                 _state.cell_voltages.cells[9] = 0;
                 
@@ -94,8 +94,8 @@ AP_BattMonitor_OA::read()
                 _state.cell_voltages.cells[3] = curr_cells.cells[11];
                 _state.cell_voltages.cells[4] = curr_cells.cells[12];
                 _state.cell_voltages.cells[5] = curr_cells.cells[13];
-                _state.cell_voltages.cells[6] = curr_cells.cells[14];
-                _state.cell_voltages.cells[7] = curr_cells.cells[15];
+                _state.cell_voltages.cells[6] = 0;
+                _state.cell_voltages.cells[7] = 0;
                 _state.cell_voltages.cells[8] = 0;
                 _state.cell_voltages.cells[9] = 0;
 
@@ -113,8 +113,8 @@ AP_BattMonitor_OA::read()
                 _state.cell_voltages.cells[3] = curr_cells.cells[19];
                 _state.cell_voltages.cells[4] = curr_cells.cells[20];
                 _state.cell_voltages.cells[5] = curr_cells.cells[21];
-                _state.cell_voltages.cells[6] = curr_cells.cells[22];
-                _state.cell_voltages.cells[7] = curr_cells.cells[23];
+                _state.cell_voltages.cells[6] = 0;
+                _state.cell_voltages.cells[7] = 0;
                 _state.cell_voltages.cells[8] = 0;
                 _state.cell_voltages.cells[9] = 0;
 
@@ -132,8 +132,8 @@ AP_BattMonitor_OA::read()
                 _state.cell_voltages.cells[3] = curr_cells.cells[27];
                 _state.cell_voltages.cells[4] = curr_cells.cells[28];
                 _state.cell_voltages.cells[5] = curr_cells.cells[29];
-                _state.cell_voltages.cells[6] = curr_cells.cells[30];
-                _state.cell_voltages.cells[7] = curr_cells.cells[31];
+                _state.cell_voltages.cells[6] = 0;
+                _state.cell_voltages.cells[7] = 0;
                 _state.cell_voltages.cells[8] = 0;
                 _state.cell_voltages.cells[9] = 0;
 

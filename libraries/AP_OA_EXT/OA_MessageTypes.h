@@ -23,6 +23,14 @@
 #define MASK_ARDUINO_ARM4           (1<<3)
 #define MASK_ARDUINO_ARM5           (1<<4)
 #define MASK_ARDUINO_ARM6           (1<<5)
+
+#define HRT_RATE_HZ 3
+#define MISSED_HEARTS_LIMIT 1
+#define CHECK_HEART_RATE_HZ 1 
+#define WARN_BATT_COUNT 5
+#define WARN_TEMP_COUNT 15
+#define WARN_ANAL_COUNT 15
+
 /*
 batt=1 1<<0 = 1
 arms=2 1<<1 = 2

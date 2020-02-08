@@ -242,15 +242,21 @@ void Copter::fast_loop()
     ins.update();
 
     // run low level rate controllers that only require IMU data
-    attitude_control->rate_controller_run();
+    if(control_mode != Mode::Number::OACONTROL){
+        
+        attitude_control->rate_controller_run(); // should not run in oa mode
 
-    #if OPTIMAERO_CHIRP_ENABLED == ENABLED
-        update_400hz_chirp();
-    #endif
+        #if OPTIMAERO_CHIRP_ENABLED == ENABLED
+            update_400hz_chirp();
+        #endif
 
-    // send outputs to the motors library immediately
-    motors_output();
+        // send outputs to the motors library immediately
+        motors_output(); //should not run in oa mode --but something needs to do some of this 
 
+    }else{
+        optim_motors_output();
+    }
+    
     // run EKF state estimator (expensive)
     // --------------------
     read_AHRS();
@@ -342,17 +348,19 @@ void Copter::update_batt_compass(void)
 // should be run at 400hz
 void Copter::fourhundred_hz_logging()
 {
-    //if (should_log(MASK_LOG_ATTITUDE_FAST) && !copter.flightmode->logs_attitude()) {
+    if (should_log(MASK_LOG_ATTITUDE_FAST) && !copter.flightmode->logs_attitude()) {
         Log_Write_Attitude();
-    //}
-    #if OPTIMAERO_LIBRARY_ENABLED == ENABLED
+    }
+    
+    /*this was for thrust stand*/
+    /*#if OPTIMAERO_LIBRARY_ENABLED == ENABLED
         #if OPTIMAERO_CHIRP_ENABLED == ENABLED
             // Log_Write_Optim_ChirpFull();  
                 if (should_log(MASK_LOG_RCOUT)) {
                     logger.Write_RCOUT();
                 }
         #endif
-    #endif
+    #endif*/
 }
 
 // ten_hz_logging_loop

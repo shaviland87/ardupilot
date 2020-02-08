@@ -7,9 +7,6 @@
 #include <AP_Motors/AP_Motors.h>
 #include <GCS_MAVLink/GCS_MAVLink.h> 	// to be able to send data to GCS
 
-#define HRT_RATE_HZ 1
-#define MISSED_HEARTS_LIMIT 3
-#define CHECK_HEART_RATE_HZ 1 
 class AP_OA_RC_Repeater : public AP_OA_Backend
 {
 

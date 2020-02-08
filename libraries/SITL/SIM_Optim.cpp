@@ -9,6 +9,8 @@
 #include <errno.h>
 
 #include <AP_HAL/AP_HAL.h>
+#include <AP_Math/AP_Math.h>
+#include <AP_Math/vectorN.h>
 
 extern const AP_HAL::HAL& hal;
 
@@ -112,6 +114,28 @@ Optim::Optim(const char *frame_str) :
     thermister_data.tempF[2] = 22.2;
     thermister_data.tempF[3] = 44.69;
 
+    /*VectorN<VectorN<float,6>,4> Matrix6_4;
+    Matrix6_4.zero();
+    for(int i=0;i<4;i++){
+        Matrix6_4[0].operator[](0)
+    }*/
+    VectorN<float,6> v6_;
+    VectorN<float,6> v16_;
+
+    //v6_.operator[](1);
+    v6_.zero();
+    v16_.zero();
+    v16_[0] = 2; v16_[2]=2; v16_[2]=1;
+    v6_[0] = 1; v6_[1]=2; v6_[2]=3;
+    for(int i=0;i<3;i++){
+    printf("v0 is %f \n",v6_.operator[](i));
+    }
+    printf("dot product is %f \n",v6_*v16_);
+
+    v16_ = v6_*10;
+    for(int j=0;j<6;j++){
+        printf("v0*10 = %f\n",v16_.operator[](j));
+    }
 
 }
 

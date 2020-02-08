@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Copter.h"
+#include <AP_OA_EXT/OA_PID.h>
+#include <AP_OA_EXT/OA_MathUtils.h>
+
 class Parameters;
 class ParametersG2;
 
@@ -21,7 +24,8 @@ public:
         RTL =           6,  // automatic return to launching point
         CIRCLE =        7,  // automatic circular flight with automatic throttle
         LAND =          9,  // automatic landing with horizontal position control
-        DRIFT =        11,  // semi-automous position, yaw and throttle control
+        OACONTROL  =   11,
+        DRIFT =        12,  // semi-automous position, yaw and throttle control
         SPORT =        13,  // manual earth-frame angular rate control with manual throttle
         FLIP =         14,  // automatically flip the vehicle on the roll axis
         AUTOTUNE =     15,  // automatically tune the vehicle's roll and pitch gains
@@ -1509,3 +1513,69 @@ private:
 
 };
 #endif
+
+
+class ModeOA : public Mode {
+
+public:
+    // inherit constructor
+    using Mode::Mode;
+
+    virtual void run() override;
+    bool init(bool ignore_checks) override;
+
+
+    bool requires_GPS() const override { return false; }
+    bool has_manual_throttle() const override { return true; }
+    bool allows_arming(bool from_gcs) const override { return true; };
+    bool is_autopilot() const override { return false; }
+    void processUserInput();
+    int16_t oa_pwm_outputs[6];
+
+
+protected:
+
+    const char *name() const override { return "OA"; }
+    const char *name4() const override { return "OA"; }
+
+private:
+    //void log_data();
+    unsigned char counter_;
+                                 ////kp,ki,kd // ff, imax, filtT, filtE, filtD , dt
+    //AC_PID      _pid_roll   = AC_PID(0.1,0.0, 0.0 ,0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0025);           
+    //AC_PID      _pid_pitch  = AC_PID(0.1,0.0, 0.0 ,0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0025);                 
+    //AC_PID      _pid_yaw    = AC_PID(0.1,0.0, 0.0 ,0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0025);  
+   
+    //MatrixN     _allocation;
+    VectorN<float,6> omega_L;
+    VectorN<float,6> omega_M;
+    VectorN<float,6> omega_N;
+    VectorN<float,6> omega_T;
+    VectorN<float,6> omega_squared;
+
+    /*new pids*/
+    OA_PID                  m_rollPID;
+    OA_PID                  m_pitchPID;
+    OA_PID                  m_yawPID;
+   
+    OA_FLP<>                m_rollCmdFilt;          // -pi to pi
+    OA_FLP<>                m_pitchCmdFilt;         // -pi/2 to pi/2
+    OA_RL<>                 m_throttleRateLimit;
+    OA_RL<>                 m_rateLimitedMinThrottle;
+    float                   m_rollCmd;
+    float                   m_pitchCmd;
+    float                   m_yawCmd;               // -pi to pi
+    float                   m_headingRef;
+    float                   m_rCmd;
+    float                   m_throttle;
+    float                   m_dt;
+
+    float                   yawErrorLimit_;
+    float                   throttleGain_;
+    float                   minThrottle_;
+    float                   minThrottleRampTime_;
+     
+
+};
+
+

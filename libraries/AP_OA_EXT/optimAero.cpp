@@ -314,15 +314,15 @@ float optimAero::get_batt_voltage(uint8_t instance, uint8_t battNum) const {
 		{ // idea to get index of what batteries we care to use to measure total voltage of
 		case 0:
 			start 	= 0;
-			end 	= 7;
+			end 	= 5;
 			break;
 		case 1:
 			start 	= 8;
-			end 	= 15;
+			end 	= 13;
 			break;
 		case 2:
 			start 	= 16;
-			end 	= 23;
+			end 	= 21;
 			break;
 		case 3:
 			start 	= 24;

@@ -180,6 +180,48 @@ void Copter::motors_output()
     SRV_Channels::push();
 }
 
+/// optim mode motors 
+void Copter::optim_motors_output(){
+ 
+    // Update arming delay state
+    if (ap.in_arming_delay && (!motors->armed() || millis()-arm_time_ms > ARMING_DELAY_SEC*1.0e3f ) ) {
+        ap.in_arming_delay = false;
+    }
+
+    // output any servo channels
+    SRV_Channels::calc_pwm();
+
+    // cork now, so that all channel outputs happen at once
+    SRV_Channels::cork();
+
+    // update output on any aux channels, for manual passthru
+    SRV_Channels::output_ch_all();
+
+    // check if we are performing the motor test
+    if (ap.motor_test) {
+        motor_test_output();
+    } else {
+        bool interlock = motors->armed() && !ap.in_arming_delay && (!ap.using_interlock || ap.motor_interlock_switch) && !SRV_Channels::get_emergency_stop();
+        if (!motors->get_interlock() && interlock) {
+            motors->set_interlock(true);
+            AP::logger().Write_Event(LogEvent::MOTORS_INTERLOCK_ENABLED);
+        } else if (motors->get_interlock() && !interlock) {
+            motors->set_interlock(false);
+            AP::logger().Write_Event(LogEvent::MOTORS_INTERLOCK_DISABLED);
+        }
+
+        // send output signals to motors
+        //motors->output();
+        for(int i=0; i<6; i++){
+            hal.rcout->write(i,mode_oa.oa_pwm_outputs[i]); //we will do this elsewhere
+        }
+    }
+
+    // push all channels
+    SRV_Channels::push();   
+}
+
+
 // check for pilot stick input to trigger lost vehicle alarm
 void Copter::lost_vehicle_check()
 {

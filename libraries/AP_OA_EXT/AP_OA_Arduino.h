@@ -7,11 +7,6 @@
 #include "OA_MessageTypes.h"
 #include <GCS_MAVLink/GCS_MAVLink.h> 	// to be able to send data to GCS
 
-
-#define WARN_BATT_COUNT 5
-#define WARN_TEMP_COUNT 5
-#define WARN_ANAL_COUNT 5
-
 class AP_OA_Arduino : public AP_OA_Backend
 {
 

@@ -60,6 +60,10 @@
     #endif
 #endif
 
+    //AC_PID                _pid_pitch;
+    //AC_PID                _pid_yaw;
+   // AC_PID      _pid_pitch = AC_PID(1, 2, 3, 0.0f, 1, 0.0f, 1, 0.0f, .0025);           // rate control PID
+
 
 #endif  // USERHOOK_VARIABLES
 

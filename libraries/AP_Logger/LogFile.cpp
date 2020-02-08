@@ -1019,11 +1019,13 @@ void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
     optimAero *oa_ = AP::oa();
     AP_Int8 typeOA;
 
-    for(uint8_t i=0; i<oa_->num_oa_connections(); i++){
+    for(uint8_t i=0; i<oa_->num_oa_connections(); i++)
+    {
         
         typeOA = oa_->get_type(i);
 
-        if(typeOA == optimAero::optimAero_TYPE_ARDUINO){
+        if(typeOA == optimAero::optimAero_TYPE_ARDUINO)
+        {
 
             switch (msg_num)
             {
@@ -1117,7 +1119,66 @@ void AP_Logger::Write_OA_Arduino(uint8_t msg_num){
             default:
                 break;
             }
-        }else{
+        }else if(typeOA == optimAero::optimAero_TYPE_MULTI)
+        {
+            switch (msg_num)
+            {
+            case 0:
+            {
+                //hrt beat
+                const struct log_externalHeartbeat pkt = 
+                {
+                    LOG_PACKET_HEADER_INIT(LOG_OA_HRT_MSG),
+                    time_us : AP_HAL::micros64(),
+                    oaID : 0,
+                    badChecksums : oa_->get_badChecksums(i),
+                    unknownIds   : oa_->get_IDs(i)
+                };
+                WriteBlock(&pkt, sizeof(pkt));
+            }break;
+
+            case 1:
+            case 2:
+            {
+                //update arm value for disconnects
+                uint8_t arm_value = 0;
+                if(oa_->get_analog_value(i,0) == ARDUINO_ARM_DISCONNECTED){
+                    arm_value = arm_value | MASK_ARDUINO_ARM1;
+                }
+                if(oa_->get_analog_value(i,1) == ARDUINO_ARM_DISCONNECTED){
+                    arm_value = arm_value | MASK_ARDUINO_ARM2;
+                }
+                if(oa_->get_analog_value(i,2) == ARDUINO_ARM_DISCONNECTED){
+                    arm_value = arm_value | MASK_ARDUINO_ARM3;
+                }
+                if(oa_->get_analog_value(i,3) == ARDUINO_ARM_DISCONNECTED){
+                    arm_value = arm_value | MASK_ARDUINO_ARM4;
+                }
+                if(oa_->get_analog_value(i,4) == ARDUINO_ARM_DISCONNECTED){
+                    arm_value = arm_value | MASK_ARDUINO_ARM5;
+                }
+                if(oa_->get_analog_value(i,5) == ARDUINO_ARM_DISCONNECTED){
+                    arm_value = arm_value | MASK_ARDUINO_ARM6;
+                }
+                
+                //thermister and arm data
+                const struct log_oaThermister pkt = {
+                    LOG_PACKET_HEADER_INIT(LOG_OA_TEMP_MSG),
+                    time_us : AP_HAL::micros64(),
+                    temp_1 : oa_->get_temperature_value(i,0),
+                    temp_2 : oa_->get_temperature_value(i,1),
+                    temp_3 : oa_->get_temperature_value(i,2),
+                    temp_4 : oa_->get_temperature_value(i,3),
+                    arm_data : arm_value
+                };
+                WriteBlock(&pkt, sizeof(pkt));
+            }break;
+
+            default:
+                break;
+            }
+        }
+        else{
             //nothing
         }
 

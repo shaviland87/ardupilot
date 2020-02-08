@@ -187,6 +187,9 @@ AP_BattMonitor::init()
             _num_instances = instance + 1;
         }
     }
+    for(int i=0;i<10;i++){
+        low_cell_voltages.cells[i]=0;
+    }
 }
 
 void AP_BattMonitor::convert_params(void) {
@@ -458,8 +461,9 @@ void AP_BattMonitor::update_low_cell(void)
             if( drivers[i]->has_cell_voltages()){
                 //grab lowest cell 
                 uint16_t lowCell=6000;
-                for(int j=0; j<10;j++){
-                    if( state[i].cell_voltages.cells[j] < lowCell && state[i].cell_voltages.cells[j] > 1   ){
+                for(int j=0; j<6;j++){
+                    if( state[i].cell_voltages.cells[j] < lowCell 
+                     && state[i].cell_voltages.cells[j] > 1500   ){
                         lowCell = state[i].cell_voltages.cells[j];
                     }
                 }

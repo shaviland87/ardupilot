@@ -236,7 +236,8 @@ public:
     friend class ModeThrow;
     friend class ModeZigZag;
     friend class ModeAutorotate;
-
+    friend class ModeOA;
+    
     Copter(void);
 
     // HAL::Callbacks implementation.
@@ -820,6 +821,8 @@ private:
     void motors_output();
     void lost_vehicle_check();
 
+    void optim_motors_output(); //for oa_mode
+
     // navigation.cpp
     void run_nav_updates(void);
     int32_t home_bearing();
@@ -989,6 +992,11 @@ private:
 #if MODE_AUTOROTATE_ENABLED == ENABLED
     ModeAutorotate mode_autorotate;
 #endif
+
+#if MODE_OA_ENABLED == ENABLED
+    ModeOA mode_oa;
+#endif 
+
 
     // mode.cpp
     Mode *mode_from_mode_num(const Mode::Number mode);

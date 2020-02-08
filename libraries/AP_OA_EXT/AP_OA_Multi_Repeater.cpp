@@ -74,6 +74,11 @@ AP_OA_Multi_Repeater::AP_OA_Multi_Repeater(optimAero::optimAero_State &_state,
 	send_temperature_health_warning_ 	= false;
     ////////////////////////end of arduino related
 
+	//set all battcells to zero
+	for(int i=0; i<48;i++){
+		state.batt_cells.cells[i] = 0;
+	}
+
 }
 
 /*detect if connected*/

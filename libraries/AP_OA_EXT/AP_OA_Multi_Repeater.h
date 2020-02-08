@@ -8,12 +8,6 @@
 #include <GCS_MAVLink/GCS_MAVLink.h> 	// to be able to send data to GCS
 #include <GCS_MAVLink/GCS.h>
 
-#define HRT_RATE_HZ 3
-#define MISSED_HEARTS_LIMIT 1
-#define CHECK_HEART_RATE_HZ 1 
-#define WARN_BATT_COUNT 5
-#define WARN_TEMP_COUNT 15
-#define WARN_ANAL_COUNT 15
 
 class AP_OA_Multi_Repeater : public AP_OA_Backend
 {
