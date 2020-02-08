@@ -1516,7 +1516,7 @@ private:
 
 
 class ModeOA : public Mode {
-
+    // REV-->2
 public:
     // inherit constructor
     using Mode::Mode;
@@ -1541,10 +1541,6 @@ protected:
 private:
     //void log_data();
     unsigned char counter_;
-                                 ////kp,ki,kd // ff, imax, filtT, filtE, filtD , dt
-    //AC_PID      _pid_roll   = AC_PID(0.1,0.0, 0.0 ,0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0025);           
-    //AC_PID      _pid_pitch  = AC_PID(0.1,0.0, 0.0 ,0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0025);                 
-    //AC_PID      _pid_yaw    = AC_PID(0.1,0.0, 0.0 ,0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0025);  
    
     //MatrixN     _allocation;
     VectorN<float,6> omega_L;
@@ -1557,11 +1553,11 @@ private:
     OA_PID                  m_rollPID;
     OA_PID                  m_pitchPID;
     OA_PID                  m_yawPID;
-   
-    OA_FLP<>                m_rollCmdFilt;          // -pi to pi
-    OA_FLP<>                m_pitchCmdFilt;         // -pi/2 to pi/2
-    OA_RL<>                 m_throttleRateLimit;
-    OA_RL<>                 m_rateLimitedMinThrottle;
+    //tbd implement first low pass, rate limit
+    OA_LowPass              m_rollCmdFilt;          // -pi to pi
+    OA_LowPass              m_pitchCmdFilt;         // -pi/2 to pi/2
+    OA_rateLimit            m_throttleRateLimit;
+    OA_rateLimit            m_rateLimitedMinThrottle;
     float                   m_rollCmd;
     float                   m_pitchCmd;
     float                   m_yawCmd;               // -pi to pi

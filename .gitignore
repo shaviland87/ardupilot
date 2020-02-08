@@ -128,3 +128,4 @@ libraries/AP_OA_EXT/OA_Filter.h
 libraries/AP_OA_EXT/OA_MathUtils.h
 libraries/AP_OA_EXT/OA_PID.h
 libraries/AP_OA_EXT/floattypes.h
+libraries/AP_OA_EXT/OA_Help.h
