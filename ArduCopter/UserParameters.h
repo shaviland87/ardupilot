@@ -38,6 +38,17 @@ public:
     AP_Float get_pitchKd() const {return _pitchKd;}
     AP_Float get_yawKd() const {return _yawKd;}
 
+    AP_Float get_rpIntLimit() const {return _rpIntLimit;}
+    AP_Float get_yawIntLimit() const {return _yawIntLimit;}
+    AP_Float get_yawErrorLimit() const {return _yawErrorLimit;}
+    AP_Float get_throttlegain() const {return _throttleGain;}
+    AP_Float get_minThrottle() const {return _minThrottle;}
+    AP_Float get_minThrottleRampTime () const {return _minThrottleRampTime;}
+    AP_Float get_attitudeTau() const {return _attitudeTau;}
+    AP_Float get_throttleRateLimit() const {return _throttleRateLimit;}
+    AP_Float get_pilotRPgain() const {return _pilotRPgain;}
+    AP_Float get_pilotYawgain() const {return _pilotYawgain;}
+    
 private:
     // Put your parameter variable definitions here
     AP_Int8 _int8;
@@ -62,4 +73,14 @@ private:
     AP_Float _yawKi;
     AP_Float _yawKd;
 
+    AP_Float _rpIntLimit;
+    AP_Float _yawIntLimit;
+    AP_Float _yawErrorLimit;
+    AP_Float _throttleGain;
+    AP_Float _minThrottle;
+    AP_Float _minThrottleRampTime;
+    AP_Float _attitudeTau;
+    AP_Float _throttleRateLimit;
+    AP_Float _pilotRPgain;
+    AP_Float _pilotYawgain;
 };

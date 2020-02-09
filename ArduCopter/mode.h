@@ -1516,7 +1516,7 @@ private:
 
 
 class ModeOA : public Mode {
-    // REV-->2
+    // REV-->3
 public:
     // inherit constructor
     using Mode::Mode;
@@ -1549,6 +1549,8 @@ private:
     VectorN<float,6> omega_T;
     VectorN<float,6> omega_squared;
 
+    bool                    standby_;
+
     /*new pids*/
     OA_PID                  m_rollPID;
     OA_PID                  m_pitchPID;
@@ -1565,13 +1567,6 @@ private:
     float                   m_rCmd;
     float                   m_throttle;
     float                   m_dt;
-
-    float                   yawErrorLimit_;
-    float                   throttleGain_;
-    float                   minThrottle_;
-    float                   minThrottleRampTime_;
-     
-
 };
 
 
