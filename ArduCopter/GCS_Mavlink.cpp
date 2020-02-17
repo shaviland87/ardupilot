@@ -186,7 +186,7 @@ int16_t GCS_MAVLINK_Copter::vfr_hud_throttle() const
  */
 void GCS_MAVLINK_Copter::send_pid_tuning()
 {
-    const Vector3f &gyro = AP::ahrs().get_gyro();
+    //const Vector3f &gyro = AP::ahrs().get_gyro();
     static const PID_TUNING_AXIS axes[] = {
         PID_TUNING_ROLL,
         PID_TUNING_PITCH,
@@ -200,9 +200,10 @@ void GCS_MAVLINK_Copter::send_pid_tuning()
         if (!HAVE_PAYLOAD_SPACE(chan, PID_TUNING)) {
             return;
         }
-        const AP_Logger::PID_Info *pid_info = nullptr;
-        float achieved;
+        //const AP_Logger::PID_Info *pid_info = nullptr;
+        //float achieved;
         switch (axes[i]) {
+        /*
         case PID_TUNING_ROLL:
             pid_info = &copter.attitude_control->get_rate_roll_pid().get_pid_info();
             achieved = degrees(gyro.x);
@@ -232,6 +233,42 @@ void GCS_MAVLINK_Copter::send_pid_tuning()
                                         pid_info->I*0.01f,
                                         pid_info->D*0.01f);
         }
+        */
+        case PID_TUNING_ROLL:
+            mavlink_msg_pid_tuning_send(chan,
+                            axes[i],
+                            copter.mode_oa.getRollCmd()*0.01f,
+                            copter.ahrs.get_roll()*0.01f,
+                            copter.mode_oa.getGxCmd()*0.01,
+                            copter.ahrs.get_gyro().x*0.01f,
+                            copter.mode_oa.getRollPID_KP()*0.01f,
+                            copter.mode_oa.getRollPID_KD()*0.01f); //
+            break;
+        case PID_TUNING_PITCH:
+            mavlink_msg_pid_tuning_send(chan,
+                            axes[i],
+                            copter.mode_oa.getPitchCmd()*0.01f,
+                            copter.ahrs.get_pitch()*0.01f,
+                            copter.mode_oa.getGyCmd()*0.01f,
+                            copter.ahrs.get_gyro().y*0.01f,
+                            copter.mode_oa.getPitchPID_KP()*0.01f,
+                            copter.mode_oa.getPitchPID_KD()*0.01f);
+            break;
+        case PID_TUNING_YAW:
+            mavlink_msg_pid_tuning_send(chan,
+                            axes[i],
+                            copter.mode_oa.getYawCmd()*0.01f,
+                            copter.ahrs.get_yaw()*0.01f,
+                            copter.mode_oa.getGzCmd()*0.01f,
+                            copter.ahrs.get_gyro().z*0.01f,
+                            copter.mode_oa.getYawPID()*0.01f,
+                            0.01f);
+            break;
+        case PID_TUNING_ACCZ:
+            break;
+        default:
+            continue;
+        }       
     }
 }
 

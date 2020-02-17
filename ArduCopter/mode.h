@@ -1530,8 +1530,22 @@ public:
     bool allows_arming(bool from_gcs) const override { return true; };
     bool is_autopilot() const override { return false; }
     void processUserInput();
+    void updateUserGains();
     int16_t oa_pwm_outputs[6];
 
+    float getRollCmd() const {return m_rollCmd;}
+    float getGxCmd()  {return m_rollCmdFilt.GetDerivative();}
+    float getPitchCmd() const {return m_pitchCmd;}
+    float getGyCmd()  {return m_pitchCmdFilt.GetDerivative();}
+    float getYawCmd() const {return m_yawCmd;}
+    float getGzCmd()  const {return m_rCmd;}
+    float getRollPID()  {return m_rollPID.CurrentPID()*cur_phase_fac_;}
+    float getPitchPID()  {return m_pitchPID.CurrentPID()*cur_phase_fac_;}
+    float getYawPID()  {return m_yawPID.CurrentPID()*cur_phase_fac_;}
+    float getRollPID_KP() {return m_rollPID.get_kp()*roll_err_*cur_phase_fac_;}
+    float getRollPID_KD() {return m_rollPID.get_kd()*roll_d_err_*cur_phase_fac_;}
+    float getPitchPID_KP() {return m_pitchPID.get_kp()*pitch_err_*cur_phase_fac_;}
+    float getPitchPID_KD() {return m_pitchPID.get_kd()*pitch_d_err_*cur_phase_fac_;}
 
 protected:
 
@@ -1567,6 +1581,12 @@ private:
     float                   m_rCmd;
     float                   m_throttle;
     float                   m_dt;
+    unsigned char           gain_counter_; 
+    float                   cur_phase_fac_;
+    float                   roll_err_;
+    float                   roll_d_err_;
+    float                   pitch_err_;
+    float                   pitch_d_err_;
 };
 
 

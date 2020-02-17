@@ -233,5 +233,9 @@ void Copter::tuning()
          copter.mode_systemid.set_magnitude(tuning_value);
 #endif
          break;
+
+         default:
+         break;
     }
+
 }
