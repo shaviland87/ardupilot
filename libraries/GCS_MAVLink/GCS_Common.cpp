@@ -2814,6 +2814,7 @@ void GCS_MAVLINK::handle_set_gps_global_origin(const mavlink_message_t &msg)
     ekf_origin.lng = packet.longitude;
     ekf_origin.alt = packet.altitude / 10;
     set_ekf_origin(ekf_origin);
+    printf("setting gps origin\n");
 }
 
 /*

@@ -1,4 +1,5 @@
 #include "Copter.h"
+#include "stdio.h"
 
 #if MODE_GUIDED_ENABLED == ENABLED
 
@@ -345,6 +346,7 @@ void ModeGuided::run()
     case Guided_WP:
         // run position controller
         pos_control_run();
+       // printf("guided wp\n");
         break;
 
     case Guided_Velocity:
@@ -355,6 +357,7 @@ void ModeGuided::run()
     case Guided_PosVel:
         // run position-velocity controller
         posvel_control_run();
+        //printf("guided pv\n");
         break;
 
     case Guided_Angle:
@@ -386,6 +389,7 @@ void ModeGuided::pos_control_run()
         target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
         if (!is_zero(target_yaw_rate)) {
             auto_yaw.set_mode(AUTO_YAW_HOLD);
+           // printf("auto yaw\n");
         }
     }
 
@@ -408,12 +412,18 @@ void ModeGuided::pos_control_run()
     if (auto_yaw.mode() == AUTO_YAW_HOLD) {
         // roll & pitch from waypoint controller, yaw rate from pilot
         attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(wp_nav->get_roll(), wp_nav->get_pitch(), target_yaw_rate);
+         //printf("auto yaw hold\n");
+
     } else if (auto_yaw.mode() == AUTO_YAW_RATE) {
         // roll & pitch from waypoint controller, yaw rate from mavlink command or mission item
         attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(wp_nav->get_roll(), wp_nav->get_pitch(), auto_yaw.rate_cds());
+        //printf("auto yaw rate\n");
+
     } else {
         // roll, pitch from waypoint controller, yaw heading from GCS or auto_heading()
         attitude_control->input_euler_angle_roll_pitch_yaw(wp_nav->get_roll(), wp_nav->get_pitch(), auto_yaw.yaw(), true);
+        //printf("auto yaw nah\n");
+
     }
 }
 

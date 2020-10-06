@@ -81,6 +81,14 @@ void Copter::userhook_SuperSlowLoop()
 void Copter::userhook_auxSwitch1(uint8_t ch_flag)
 {
     // put your aux switch #1 handler here (CHx_OPT = 47)
+    // if an rc channel is set to a given mode(this one)
+    // we want to be able to send two set values(spray on/ spray off)
+    // the rc-input channel will directly send out an aux pwm value?
+
+    // srv_function : k_manual == 1 --> if we make a channel k_manual the input is output..so all we have to do for manual mission is do that and set limits right
+    // could do a manual raw dog version too? hal.rcout->write....
+
+
 }
 
 void Copter::userhook_auxSwitch2(uint8_t ch_flag)

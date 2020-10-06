@@ -24,9 +24,8 @@ public:
         RTL =           6,  // automatic return to launching point
         CIRCLE =        7,  // automatic circular flight with automatic throttle
         LAND =          9,  // automatic landing with horizontal position control
-        OACONTROL  =   11,
-        DRIFT =        12,  // semi-automous position, yaw and throttle control
-        SPORT =        13,  // manual earth-frame angular rate control with manual throttle
+        OACONTROL  =   11,  // comes up as drift mode 
+        DFC        =   13,  // DFC mode was sport
         FLIP =         14,  // automatically flip the vehicle on the roll axis
         AUTOTUNE =     15,  // automatically tune the vehicle's roll and pitch gains
         POSHOLD =      16,  // automatic position hold with manual override, with automatic throttle
@@ -40,6 +39,9 @@ public:
         ZIGZAG    =    24,  // ZIGZAG mode is able to fly in a zigzag manner with predefined point A and point B
         SYSTEMID  =    25,  // System ID mode produces automated system identification signals in the controllers
         AUTOROTATE =   26,  // Autonomous autorotation
+        DRIFT =        27,  // semi-automous position, yaw and throttle control
+        SPORT =        28,  // manual earth-frame angular rate control with manual throttle
+
     };
 
     // constructor
@@ -88,6 +90,7 @@ public:
 
     // pilot input processing
     void get_pilot_desired_lean_angles(float &roll_out, float &pitch_out, float angle_max, float angle_limit) const;
+    void get_pilot_dfc_desired_lean_angles(float &roll_out, float &pitch_out, float angle_max, float angle_limit)const;
     float get_pilot_desired_yaw_rate(int16_t stick_angle);
     float get_pilot_desired_throttle() const;
 
@@ -1589,4 +1592,25 @@ private:
     float                   pitch_d_err_;
 };
 
+class ModeDFC : public Mode {
 
+public:
+    // inherit constructor
+    using Mode::Mode;
+
+    virtual void run() override;
+
+    bool requires_GPS() const override { return false; }
+    bool has_manual_throttle() const override { return true; }
+    bool allows_arming(bool from_gcs) const override { return true; };
+    bool is_autopilot() const override { return false; }
+
+protected:
+
+    const char *name() const override { return "DFC"; }
+    const char *name4() const override { return "DFC"; }
+
+private:
+    void log_data();
+    unsigned char counter_;
+};

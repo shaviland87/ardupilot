@@ -1,7 +1,7 @@
 #include "Copter.h"
 
 #include "GCS_Mavlink.h"
-
+#include "stdio.h"
 /*
  *  !!NOTE!!
  *
@@ -669,7 +669,7 @@ MAV_RESULT GCS_MAVLINK_Copter::handle_command_long_packet(const mavlink_command_
         // param7 : altitude [metres]
 
         float takeoff_alt = packet.param7 * 100;      // Convert m to cm
-
+        printf("takeoff %f \n",takeoff_alt);
         if (!copter.flightmode->do_user_takeoff(takeoff_alt, is_zero(packet.param3))) {
             return MAV_RESULT_FAILED;
         }
@@ -1082,9 +1082,11 @@ void GCS_MAVLINK_Copter::handleMessage(const mavlink_message_t &msg)
         if (!yaw_ignore) {
             yaw_cd = ToDeg(packet.yaw) * 100.0f;
             yaw_relative = packet.coordinate_frame == MAV_FRAME_BODY_NED || packet.coordinate_frame == MAV_FRAME_BODY_OFFSET_NED;
+            printf("yaw cd/rel is %f, %d \n",yaw_cd, (int)yaw_relative);
         }
         if (!yaw_rate_ignore) {
             yaw_rate_cds = ToDeg(packet.yaw_rate) * 100.0f;
+            printf("yaw cd,rel is %f \n",yaw_rate_cds);
         }
 
         // send request

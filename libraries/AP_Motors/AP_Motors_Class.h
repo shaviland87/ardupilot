@@ -1,4 +1,9 @@
-#pragma once
+  /*Telemetry::Status      flightStatus;
+  Telemetry::GPSFused          latLon;
+  float32_t                    altitude;
+  Telemetry::RC                 rc;
+  Telemetry::Vector3f            velocity;
+  Telemetry::Quaternion         quaternion;*/#pragma once
 
 #include <AP_Common/AP_Common.h>
 #include <AP_Math/AP_Math.h>        // ArduPilot Mega Vector/Matrix math Library
@@ -61,6 +66,7 @@ public:
         MOTOR_FRAME_TYPE_I = 15, // (sideways H) octo only
         MOTOR_FRAME_TYPE_NYT_PLUS = 16, // plus frame, no differential torque for yaw
         MOTOR_FRAME_TYPE_NYT_X = 17, // X frame, no differential torque for yaw
+        MOTOR_FRAME_TYPE_DFC_30 = 18, // for direct force control  = 30 deg motor tilt
     };
 
     // Constructor
@@ -94,6 +100,8 @@ public:
     void                set_throttle_filter_cutoff(float filt_hz) { _throttle_filter.set_cutoff_frequency(filt_hz); }
     void                set_forward(float forward_in) { _forward_in = forward_in; }; // range -1 ~ +1
     void                set_lateral(float lateral_in) { _lateral_in = lateral_in; };     // range -1 ~ +1
+    void                set_FX(float fx_in){ _x_control_input = fx_in; }; // range -1 to 1
+    void                set_FY(float fy_in){ _y_control_input = fy_in; }; // range -1 to 1
 
     // accessors for roll, pitch, yaw and throttle inputs to motors
     float               get_roll() const { return _roll_in; }
@@ -105,6 +113,8 @@ public:
     float               get_forward() const { return _forward_in; }
     float               get_lateral() const { return _lateral_in; }
     virtual float       get_throttle_hover() const = 0;
+    float               get_FX() const { return _x_control_input; }
+    float               get_FY() const { return _y_control_input; }
 
     // motor failure handling
     void                set_thrust_boost(bool enable) { _thrust_boost = enable; }
@@ -239,6 +249,8 @@ protected:
     LowPassFilterFloat  _throttle_filter;           // throttle input filter
     DesiredSpoolState   _spool_desired;             // desired spool state
     SpoolState          _spool_state;               // current spool mode
+    float               _x_control_input;           // desired x accel from DFC controller , +/- 1
+    float               _y_control_input;           // desired y accel from DFC controller , +/- 1
 
     // air pressure compensation variables
     float               _air_density_ratio;     // air density / sea level density - decreases in altitude

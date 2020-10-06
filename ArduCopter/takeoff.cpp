@@ -1,5 +1,5 @@
 #include "Copter.h"
-
+#include "stdio.h"
 Mode::_TakeOff Mode::takeoff;
 
 float Mode::auto_takeoff_no_nav_alt_cm = 0;
@@ -19,27 +19,38 @@ bool Mode::do_user_takeoff_start(float takeoff_alt_cm)
 bool Mode::do_user_takeoff(float takeoff_alt_cm, bool must_navigate)
 {
     if (!copter.motors->armed()) {
+        printf("no armed\n");
         return false;
     }
     if (!copter.ap.land_complete) {
         // can't takeoff again!
+        printf("land comp\n");
+
         return false;
     }
     if (!has_user_takeoff(must_navigate)) {
         // this mode doesn't support user takeoff
+                printf("must nav\n");
+
         return false;
     }
     if (takeoff_alt_cm <= copter.current_loc.alt) {
         // can't takeoff downwards...
+                printf("cant go down\n");
+
         return false;
     }
 
     // Helicopters should return false if MAVlink takeoff command is received while the rotor is not spinning
     if (motors->get_spool_state() != AP_Motors::SpoolState::THROTTLE_UNLIMITED && copter.ap.using_interlock) {
+                printf("interlock\n");
+
         return false;
     }
 
     if (!do_user_takeoff_start(takeoff_alt_cm)) {
+                printf("can't do\n");
+
         return false;
     }
 
